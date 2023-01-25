@@ -7,10 +7,11 @@
 
       <v-btn :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="onClick"></v-btn>
 
-      <v-btn v-if="userStore.isAuthenticated" icon="mdi-logout" :loading="loading" @click="logout"></v-btn>
+      <!-- v-if="userStore.isAuthenticated" -->
+      <v-btn  icon="mdi-logout" :loading="loading" @click="logout"></v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" fixed temporary>
+    <v-navigation-drawer v-model="drawer" temporary border>
     </v-navigation-drawer>
 
     <v-main :class="theme === 'light' ? 'bg-color' : 'bg-color-dark'">

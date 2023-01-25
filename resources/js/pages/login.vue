@@ -62,7 +62,7 @@ async function submit() {
 
       userStore.login(user)
 
-      router.push({ name: 'dashboard' })
+      await router.push({ name: 'dashboard' })
 
     }
 

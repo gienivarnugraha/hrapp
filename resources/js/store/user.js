@@ -2,16 +2,23 @@
 export const useUserStore = defineStore('user',{
   state: () => ({
     user: {},
-    isAuthenticated: false,
+    authenticated: false,
   }),
+  getters:{
+    isAuthenticated: (state) => state.authenticated || Boolean( localStorage.getItem('authenticated')),
+  },
   actions:{
     login(user){
       this.user = user;
-      this.isAuthenticated = true;
+      this.authenticated = true;
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('authenticated', true)
     },
     logout() {
       this.user = {};
-      this.isAuthenticated = false;
+      this.authenticated = false;
+      localStorage.removeItem('user')
+      localStorage.removeItem('authenticated')
     }
   }
 })
