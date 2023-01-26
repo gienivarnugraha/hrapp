@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('job_title_competency', function (Blueprint $table) {
+        Schema::create('competency_job_title', function (Blueprint $table) {
             $table->id();
             $table->string('position');
             $table->foreignId('job_title_id')->references('id')->on('job_titles');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_title_competency');
+        Schema::dropIfExists('competency_job_title');
     }
 };

@@ -21,7 +21,7 @@ class CompetencySeeder extends Seeder
         while (($data = fgetcsv($csvFile)) !== FALSE) {
             if (!$firstline) {
                 Competency::create([
-                    "competency" => $data['0'],
+                    "name" => $data['0'],
                     "type" => $data['1'],
                 ]);    
             }

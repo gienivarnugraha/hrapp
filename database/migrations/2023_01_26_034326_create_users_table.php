@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('nik');
             $table->string('email')->unique();
             $table->string('org');
-            $table->string('position');
-            $table->foreignId('job_title_id')->constrained();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

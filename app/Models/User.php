@@ -45,11 +45,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function competencies() {
-        return $this->belongsToMany(Competency::class);
-    }
 
-    public function jobTitle() {
-        return $this->belongsTo(JobTitle::class);
-    }
 }

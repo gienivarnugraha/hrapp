@@ -7,6 +7,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import routes from '~pages'
 
+console.log(routes);
 
 import { useUserStore } from './store/user';
 

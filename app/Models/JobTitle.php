@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\User;
+use App\Models\People;
+use App\Models\Competency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -12,7 +13,10 @@ class JobTitle extends Model
 
     protected $fillable = ['name'];
 
-    public function users(){
-        return $this->hasMany(User::class);
+    public function peoples(){
+        return $this->hasMany(People::class);
+    }
+    public function competencies(){
+        return $this->belongsToMany(Competency::class);
     }
 }

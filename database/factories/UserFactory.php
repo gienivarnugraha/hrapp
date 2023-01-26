@@ -23,8 +23,6 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'nik' => fake()->unique()->numerify('######'),
             'org' => fake()->regexify('[A-Z]{2}[0-9]{4}'),
-            'job_title_id' => JobTitle::all()->random()->id,
-            'position' => fake()->randomElement(['junior','medior','senior']),
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),

@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('competency_user', function (Blueprint $table) {
+        Schema::create('peoples', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('competency_id')->references('id')->on('competencies');
+            $table->string('name');
+            $table->string('nik');
+            $table->string('org');
+            $table->string('position');
+            $table->foreignId('job_title_id')->constrained();
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('competency_user');
+        Schema::dropIfExists('peoples');
     }
 };

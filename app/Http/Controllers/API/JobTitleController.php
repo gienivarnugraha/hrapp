@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\JobTitle;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class JobTitleController extends Controller
 {
@@ -14,7 +15,7 @@ class JobTitleController extends Controller
      */
     public function index()
     {
-        //
+        return response(JobTitle::with('jobTitle')->all());
     }
 
     /**

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Competency;
-use App\Http\Requests\StoreCompetencyRequest;
-use App\Http\Requests\UpdateCompetencyRequest;
+use App\Http\Controllers\Controller;
 
 class CompetencyController extends Controller
 {
@@ -15,7 +14,7 @@ class CompetencyController extends Controller
      */
     public function index()
     {
-        //
+        return response(Competency::all());
     }
 
     /**
@@ -34,7 +33,7 @@ class CompetencyController extends Controller
      * @param  \App\Http\Requests\StoreCompetencyRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreCompetencyRequest $request)
+    public function store($request)
     {
         //
     }
@@ -68,7 +67,7 @@ class CompetencyController extends Controller
      * @param  \App\Models\Competency  $Competency
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCompetencyRequest $request, Competency $Competency)
+    public function update($request, Competency $Competency)
     {
         //
     }
