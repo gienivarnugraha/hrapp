@@ -22,7 +22,9 @@ export default defineConfig({
                 },
             },
         }),
-        vuetify(),
+        vuetify({
+            // styles: { configFile: 'resources/sass/app.scss' }
+        }),
         AutoImport({
             imports: [
                 'vue',

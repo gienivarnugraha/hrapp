@@ -1,27 +1,29 @@
 <template>
 
-    <v-container fluid>
-        <v-card>
-          <v-table fixed-header height="300px">
-            <thead>
-              <tr>
-                <th class="text-left">
-                  Name
-                </th>
-                <th class="text-left">
-                  Calories
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in desserts" :key="item.name">
-                <td>{{ item.name }}</td>
-                <td>{{ item.calories }}</td>
-              </tr>
-            </tbody>
-          </v-table>
-        </v-card>
-    </v-container>
+  <v-container fluid  >
+    <v-card class="pa-4" prepend-icon="mdi-home" title="Login" >
+      <v-card-text>
+        <v-table fixed-header >
+          <thead>
+            <tr>
+              <th class="text-left">
+                Name
+              </th>
+              <th class="text-left">
+                Calories
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in desserts" :key="item.name">
+              <td>{{ item.name }}</td>
+              <td>{{ item.calories }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script setup>

@@ -2,6 +2,7 @@
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 // Styles
 import 'vuetify/styles'
+
 import { md3 } from 'vuetify/blueprints'
 
 import { createVuetify } from 'vuetify'

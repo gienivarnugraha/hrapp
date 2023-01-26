@@ -1,17 +1,41 @@
 <template>
-  <v-app :theme="theme" >
-    <v-app-bar app>
+  <v-app :theme="theme">
+    <v-app-bar app :elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-spacer></v-spacer>
+      <template v-slot:append class="mr-10">
+        <v-tooltip text="Theme">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" location="bottom" :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+              @click="onClick"></v-btn>
+          </template>
+        </v-tooltip>
 
-      <v-btn :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="onClick"></v-btn>
-
-      <!-- v-if="userStore.isAuthenticated" -->
-      <v-btn  icon="mdi-logout" :loading="loading" @click="logout"></v-btn>
+        <!-- v-if="userStore.isAuthenticated" -->
+        <v-tooltip text="Logout">
+          <template v-slot:activator="{ props }">
+            <v-btn  v-bind="props" location="bottom" icon="mdi-logout" :loading="loading" @click="logout"></v-btn>
+          </template>
+        </v-tooltip>
+      </template>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" temporary border>
+      <v-list>
+          <v-list-item
+            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+            title="Sandra Adams"
+            subtitle="sandra_a88@gmailcom"
+          ></v-list-item>
+        </v-list>
+
+        <v-divider></v-divider>
+
+        <v-list density="compact" nav>
+          <v-list-item prepend-icon="mdi-folder" title="My Files" value="myfiles"></v-list-item>
+          <v-list-item prepend-icon="mdi-account-multiple" title="Shared with me" value="shared"></v-list-item>
+          <v-list-item prepend-icon="mdi-star" title="Starred" value="starred"></v-list-item>
+        </v-list>
     </v-navigation-drawer>
 
     <v-main :class="theme === 'light' ? 'bg-color' : 'bg-color-dark'">
@@ -55,6 +79,11 @@ const logout = async () => {
 .bg-color {
   background-color: #6a64e5;
 }
+
+.v-toolbar__append{
+  margin-inline-end: 40px !important;
+}
+
 .bg-color-dark {
   background-color: #1e181e;
 }

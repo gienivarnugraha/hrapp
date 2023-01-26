@@ -1,31 +1,37 @@
 <template>
   <v-container class="pa-4 d-flex justify-center align-center" style="height:100%;">
     <v-card class="pa-4" border align="center" min-width="640px" border-color="primary">
-      <v-card-title>Login</v-card-title>
+      <v-card-title prepend-icon="mdi-home">Login</v-card-title>
 
-      <v-form ref="form" v-model="valid" lazy-validation>
+      <v-card-text>
+        <v-form ref="form" v-model="valid" lazy-validation>
 
-        <v-text-field class="my-4" color="primary" v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
+          <v-text-field class="my-4" color="primary" v-model="email" :rules="emailRules" label="E-mail"
+            required></v-text-field>
 
-        <v-text-field class="my-4" color="primary"  v-model="password" :counter="10" label="Password" type="password" required></v-text-field>
+          <v-text-field class="my-4" color="primary" v-model="password" :counter="10" label="Password" type="password"
+            required></v-text-field>
 
-        <!-- 
-            <v-checkbox
-              v-model="checkbox"
-              :rules="[v => !!v || 'You must agree to continue!']"
-              label="Do you agree?"
-              required
-            ></v-checkbox>
-         -->
-        <v-btn  color="primary" class="me-4" @click="submit">
-          Submit
-        </v-btn>
+          <!-- 
+              <v-checkbox
+                v-model="checkbox"
+                :rules="[v => !!v || 'You must agree to continue!']"
+                label="Do you agree?"
+                required
+              ></v-checkbox>
+          -->
+          <v-btn color="primary" class="me-4" @click="submit">
+            Submit
+          </v-btn>
 
-        <v-btn  color="error" class="me-4" @click="reset">
-          Reset
-        </v-btn>
+          <v-btn color="error" class="me-4" @click="reset">
+            Reset
+          </v-btn>
 
-      </v-form>
+        </v-form>
+      </v-card-text>
+
+
     </v-card>
   </v-container>
 </template>
