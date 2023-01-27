@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use DB;
+use App\Models\JobTitle;
+use App\Models\Competency;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class People extends Model
 {
@@ -11,11 +14,13 @@ class People extends Model
 
     protected $table = 'peoples';
 
-    public function competencies() {
-        return $this->belongsToMany(Competency::class);
+    public function competencies()
+    {
+        return $this->belongsToMany(Competency::class)->orderBy('type');
     }
 
-    public function jobTitle() {
+    public function jobTitle()
+    {
         return $this->belongsTo(JobTitle::class);
     }
 }

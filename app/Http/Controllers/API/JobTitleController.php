@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\JobTitle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Builder;
 
 class JobTitleController extends Controller
 {
@@ -15,7 +16,9 @@ class JobTitleController extends Controller
      */
     public function index()
     {
-        return response(JobTitle::with('jobTitle')->all());
+        $job = JobTitle::with('competencies')->get();
+        
+        return response($job);
     }
 
     /**

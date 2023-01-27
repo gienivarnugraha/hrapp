@@ -13,7 +13,7 @@
           <tbody>
             <tr v-for="item in items" :key="item.id">
               <td>{{ item.name }}</td>
-              <td>{{ item.type }}</td>
+              <td class="text-center">{{ item.type }}</td>
             </tr>
           </tbody>
         </v-table>
@@ -25,8 +25,8 @@
 <script setup>
 
 const headers = [
-  {title: "Name", class: "text-left",},
-  {title: "Type", class: "text-left",},
+  {title: "Name", class: "text-center w-75",},
+  {title: "Type", class: "text-center",},
 ]
 
 const items = ref([])

@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\JobTitleController;
 use App\Http\Controllers\API\CompetencyController;
+use App\Http\Controllers\API\PeopleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,4 @@ Route::get('/users', function (Request $request) {
 
 Route::apiResource('job-title', JobTitleController::class);
 Route::apiResource('competencies', CompetencyController::class);
+Route::apiResource('peoples', PeopleController::class);

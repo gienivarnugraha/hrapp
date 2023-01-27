@@ -17,6 +17,6 @@ class JobTitle extends Model
         return $this->hasMany(People::class);
     }
     public function competencies(){
-        return $this->belongsToMany(Competency::class);
+        return $this->belongsToMany(Competency::class)->withPivot('position');
     }
 }

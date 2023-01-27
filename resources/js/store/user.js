@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user',{
   }),
   getters:{
     isAuthenticated: (state) => state.authenticated || Boolean( localStorage.getItem('authenticated')),
+    currentUser: (state) => state.user || localStorage.getItem('user'),
   },
   actions:{
     login(user){

@@ -22,15 +22,5 @@ class RoleSeeder extends Seeder
             Role::create(['name'=>$role]);
         });
 
-        // User::find(1)->assignRole(Role::find(1));
-        // User::find(2)->assignRole(Role::find(2));
-        // User::find(3)->assignRole(Role::find(3));
-        // User::doesntHave('roles')->get()->each(function ($user) {
-        //     $user->assignRole(Role::find(4));
-        // });
-
-
-
-
     }
 }
