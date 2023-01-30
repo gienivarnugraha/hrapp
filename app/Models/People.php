@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use DB;
+use App\Models\Event;
 use App\Models\JobTitle;
 use App\Models\Competency;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +17,11 @@ class People extends Model
     public function competencies()
     {
         return $this->belongsToMany(Competency::class)->orderBy('type');
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class);
     }
 
     public function jobTitle()

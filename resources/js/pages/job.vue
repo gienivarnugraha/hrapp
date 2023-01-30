@@ -14,20 +14,27 @@
             <template v-for="item in items" :key="item.id">
               <tr>
                 <td>{{ item.name }}</td>
-                <td class="text-center"> <v-icon @click="onExpand(item)"> {{ isExpanded(item) ?'mdi-arrow-up-drop-circle' :'mdi-arrow-down-drop-circle'}}</v-icon> </td>
+                <td class="text-center"> <v-icon @click="onExpand(item)"> {{
+                  isExpanded(item)
+                                    ?'mdi-arrow-up-drop-circle': 'mdi-arrow-down-drop-circle'
+                }}</v-icon> </td>
               </tr>
               <tr v-if="isExpanded(item)">
                 <td :colspan="headers.length" class="py-4">
-                  <v-card variant="outlined" >
+                  <v-card variant="outlined">
                     <v-card-title> {{ item.name }}</v-card-title>
                     <v-card-subtitle> Competencies: </v-card-subtitle>
-                    <v-list density="compact" >
-                      <v-list-item v-for="(competency, index) in item.competencies" :key="competency.id">
-                        <template v-slot:prepend class="text-center"> {{ index+ 1 }} </template>
-                        <p class="ml-4"> {{ competency.name }} </p> 
-                        <p class="ml-4 mt-0"> {{ competency.type }} Skill </p> 
-                      </v-list-item>
-                    </v-list>
+                    <v-card-text>
+                      <v-list lines="one" density="compact" disabled item-value="id" :items="item.skills"
+                        item-title="name">
+                        <template v-slot:item="{ title, value, index }">
+                          <v-list-item>
+                            {{ title }}
+                          </v-list-item>
+                        </template>
+                      </v-list>
+                    </v-card-text>
+
 
                   </v-card>
 

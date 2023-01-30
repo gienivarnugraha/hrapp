@@ -24,25 +24,40 @@
                 }}</v-icon> </td>
               </tr>
               <tr v-if="isExpanded(item)">
-                <td :colspan="headers.length" class="py-4">
-                  <v-card variant="outlined" color="indigo">
-                    <v-card-title> {{ item.name }}</v-card-title>
-                    <v-card-subtitle> Competencies: </v-card-subtitle>
-                    <v-list density="compact" v-if="item.skills.hard">
-                      <v-list-item-title> Hard Skills </v-list-item-title>
-                      <v-list-item v-for="(competency, index) in item.skills.hard" :key="competency.id">
-                        <template v-slot:prepend> {{ index+ 1 }} </template>
-                        <p class="ml-4"> {{ competency.name }} </p>
-                      </v-list-item>
-                    </v-list>
+                <v-slide-y-transition>
 
-                    <v-list lines="one" :items="item.competencies" item-value="id" item-title="name"> 
+                  <td :colspan="headers.length" class="py-4">
+                    <v-card variant="outlined" color="indigo">
+                      <v-card-title> {{ item.name }}</v-card-title>
+                      <v-card-subtitle> Competencies: </v-card-subtitle>
+  
+                      <v-card-text>
+                        <v-list lines="one" density="compact" disabled :items="item.skills" item-value="id"
+                          item-title="name"> </v-list>
+    
+                        <v-select class="w-25" :items="positions" v-model="expanded[findIndex(item)]['next_position']" label="Promote to" density="comfortable"></v-select>
+    
+                        <v-card-subtitle v-if="item['next_position']" > Required Competencies to Promote into {{ item['next_position'] }} </v-card-subtitle>
 
-                      </v-list>
-
-                  </v-card>
-
-                </td>
+                        <v-slide-y-transition group v-if="item['next_position']">
+    
+                          <v-list v-if="item['next_position']" lines="one" density="compact" disabled :items="item.required_skills[item['next_position']]" item-value="id"
+                            item-title="name">
+                            <template v-slot:item="{title, value, index}">
+                              <v-list-item :class="item.skills.find((i)=>i.id === value) ? 'text-green': 'text-red'">
+                                {{ title }} - <v-icon :icon="item.skills.find((i)=>i.id === value) ? 'mdi-check' : 'mdi-close'"> </v-icon>
+                              </v-list-item> 
+                            </template>
+                           </v-list>
+    
+                        </v-slide-y-transition>
+                      </v-card-text>
+  
+  
+                    </v-card>
+  
+                  </td>
+                </v-slide-y-transition>
               </tr>
             </template>
           </tbody>
@@ -63,13 +78,22 @@ const headers = [
   { title: "Action", class: "text-center", },
 ]
 
+const positions = [
+  { title: "Junior", value: 'junior'},
+  { title: "Medior", value: 'medior'},
+  { title: "Senior", value: 'senior'},
+]
+
 const items = ref([])
 
 const expanded = ref([])
+
 const isExpanded = (item) => expanded.value.includes(item)
 
+const findIndex = (item) => expanded.value.findIndex(exp => exp.id == item.id)
+
 const onExpand = (item) => {
-  const index = expanded.value.findIndex(exp => exp.id == item.id)
+  const index = findIndex(item)
 
   if (index < 0) {
     expanded.value.push(item)
@@ -83,23 +107,8 @@ const loading = ref(true)
 onMounted(async () => {
   try {
     const { data: peoples } = await axios.get('/api/peoples')
-    peoples.map(people=>{
-      let skills = people.competencies
 
-      let hardIndex = skills.findIndex(skill => skill.type === 'hard' )
-      let softIndex = skills.findIndex(skill => skill.type === 'soft' )
-      let doaIndex = skills.findIndex(skill => skill.type === 'doa' )
-
-      skills.splice(hardIndex, 0,{type:'subheader',name: 'hard'})
-      skills.splice(softIndex, 0, {type:'divider'}, {type:'subheader',name:'soft'})
-      skills.splice(doaIndex, 0, {type:'divider'}, {type:'subheader',name:'doa'})
-
-      
-      people['skills'] = skills
-      
-    })
     items.value = peoples
-    
 
   } catch (error) {
     console.log(error);
@@ -108,7 +117,6 @@ onMounted(async () => {
   }
 })
 </script>
-
 
 <route lang="yaml">
   name: peoples

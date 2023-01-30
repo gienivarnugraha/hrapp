@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Faker\Factory;
 use App\Models\User;
+use App\Models\Event;
 use App\Models\People;
 use App\Models\JobTitle;
 use App\Models\Competency;
@@ -11,11 +13,14 @@ use Illuminate\Support\Arr;
 use Illuminate\Database\Seeder;
 use Database\Seeders\RoleSeeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Container\Container;
 use Database\Seeders\JobTitleSeeder;
 use Database\Seeders\CompetencySeeder;
 
 class DatabaseSeeder extends Seeder
 {
+
+    
     /**
      * Seed the application's database.
      *
@@ -23,6 +28,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+
+        $faker = Factory::create();
 
         JobTitleSeeder::run();
 
@@ -40,6 +47,7 @@ class DatabaseSeeder extends Seeder
 
         People::factory()
             ->count(10)
+            ->has(Event::factory()->count(5))
             ->create()
             ->each(function (People $people) {
 

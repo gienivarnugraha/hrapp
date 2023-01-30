@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\People;
+use App\Models\Competency;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PeopleCollection;
 use App\Http\Resources\PeopleResource;
-
+use App\Http\Resources\PeopleCollection;
+use Illuminate\Database\Eloquent\Builder;
 
 class PeopleController extends Controller
 {
@@ -20,49 +21,58 @@ class PeopleController extends Controller
     {
         $peoples = People::with(['jobTitle', 'competencies'])->get();
 
-/*         $peoples->map(function ($people) {
-            return $people['skills'] = $people->competencies->groupBy('type')->all();
-        }); */
-/* 
         $peoples->map(function ($people) {
-            $skills = collect([
-                ['id' => 'hard', 'type' => 'subheader', 'title' => 'Hard Skills'],
-                ['type' => 'divider'],
-                ['id' => 'soft', 'type' => 'subheader', 'title' => 'Soft Skills'],
-                ['type' => 'divider'],
-                ['id' => 'doa', 'type' => 'subheader', 'title' => 'DOA'],
-            ]);
+            // $requiredSkillsList = $people->jobTitle->competencies->pluck('id');
 
-            $people->competencies->each(function ($competency) use ($skills) {
-                $index = -1;
+            // $currentSkillsList = $people->competencies->pluck('id');
 
-                if ($competency->type === 'hard') {
-                    $index = $skills->search(function ($skill) {
-                        return $skill["id"] === 'hard';
-                    });
-                }
-                if ($competency->type === 'soft') {
-                    $index = $skills->search(function ($skill) {
-                        return $skill["id"] === 'soft';
-                    });
-                }
-                if ($competency->type === 'doa') {
-                    $index = $skills->search(function ($skill) {
-                        return $skill["id"] === 'doa';
-                    });
-                }
+            // $diffId = $requiredSkillsList->diff($currentSkillsList)->all();
 
-                $skill = ['name' => $competency->name, 'value' => $competency->id];
-
-                $skills->splice($index+1, 0, [$skill]);
-            });
-
-            return $people['skills'] = $skills;
-        }); */
+            $jobTitleId = $people->jobTitle->id;
 
 
+            $requiredSkills = [
+                'junior' => $this->getSkills(Competency::position('junior', $jobTitleId)->get()),
+                'senior' => $this->getSkills(Competency::position('senior', $jobTitleId)->get()),
+                'medior' => $this->getSkills(Competency::position('medior', $jobTitleId)->get()),
+            ];
+
+            $people['skills'] = $this->getSkills($people->competencies);
+
+            $people['required_skills'] = $requiredSkills;
+
+            return $people;
+        });
 
         return response($peoples);
+    }
+
+    public function getSkills($competencies){
+        $skills = collect([
+            ['id' => 'hard', 'type' => 'subheader', 'name' => 'Hard Skills'],
+            ['id' => 'divider#1', 'type' => 'divider'],
+            ['id' => 'soft', 'type' => 'subheader', 'name' => 'Soft Skills'],
+            ['id' => 'divider#2', 'type' => 'divider'],
+            ['id' => 'doa', 'type' => 'subheader', 'name' => 'DOA'],
+        ]);
+
+        $competencies->each(function ($competency) use ($skills) {
+            $index = -1;
+
+            if ($competency->type === 'hard') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'hard');
+            } else if ($competency->type === 'soft') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'soft');
+            } else if ($competency->type === 'doa') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'doa');
+            }
+
+            $skill = ['name' => $competency->name, 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
+
+            $skills->splice($index + 1, 0, [$skill]);
+        });
+
+        return $skills;
     }
 
     /**

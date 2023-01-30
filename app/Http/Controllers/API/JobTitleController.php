@@ -16,10 +16,43 @@ class JobTitleController extends Controller
      */
     public function index()
     {
-        $job = JobTitle::with('competencies')->get();
+        $jobs = JobTitle::all();
+
+        $jobs->map(function($job){
+            return $job['skills'] = $this->getSkills($job->competencies);
+        });
         
-        return response($job);
+        return response($jobs);
     }
+
+    public function getSkills($competencies){
+        $skills = collect([
+            ['id' => 'hard', 'type' => 'subheader', 'name' => 'Hard Skills'],
+            ['id' => 'divider#1', 'type' => 'divider'],
+            ['id' => 'soft', 'type' => 'subheader', 'name' => 'Soft Skills'],
+            ['id' => 'divider#2', 'type' => 'divider'],
+            ['id' => 'doa', 'type' => 'subheader', 'name' => 'DOA'],
+        ]);
+
+        $competencies->each(function ($competency) use ($skills) {
+            $index = -1;
+
+            if ($competency->type === 'hard') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'hard');
+            } else if ($competency->type === 'soft') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'soft');
+            } else if ($competency->type === 'doa') {
+                $index = $skills->search(fn ($skl) => $skl["id"] === 'doa');
+            }
+
+            $skill = ['name' => $competency->name, 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
+
+            $skills->splice($index + 1, 0, [$skill]);
+        });
+
+        return $skills;
+    }
+
 
     /**
      * Store a newly created resource in storage.
