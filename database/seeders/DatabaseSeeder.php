@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
         People::factory()
             ->count(10)
-            ->has(Event::factory()->count(5))
+            ->has(Event::factory()->count(2)->for(Competency::inRandomOrder()->first()))
             ->create()
             ->each(function (People $people) {
 

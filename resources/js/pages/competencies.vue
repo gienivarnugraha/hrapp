@@ -1,6 +1,22 @@
 <template>
   <v-container fluid  >
-    <v-card class="pa-4" prepend-icon="mdi-briefcase" title="Competencies" :loading="loading" :disabled="loading"  >
+    <v-card class="pa-4" :loading="loading" :disabled="loading"  >
+      <v-card-title class="px-8 my-4">
+        <v-row align="center">
+          <v-col cols="10">
+            <v-icon class="mr-4">
+              mdi-briefcase
+            </v-icon>
+            Competencies
+
+          </v-col>
+          <v-col cols="2" class="text-right">
+            <v-btn size="small" class="w-75" :rounded="false" prepend-icon="mdi-plus" variant="flat">Add</v-btn>
+          </v-col>
+        </v-row>
+      </v-card-title>
+      
+
       <v-card-text>
         <v-table fixed-header height="75vh">
           <thead>

@@ -22,6 +22,11 @@ class Competency extends Model
         return $this->belongsToMany(JobTitle::class)->withPivot('position');
     }
 
+    public function events()
+    {
+        return $this->hasMany(JobTitle::class);
+    }
+
     public  function  scopePosition($q, string $position, $jobTitleId)
     {
         return $q->whereHas('jobTitle', function($query) use ($position, $jobTitleId) {

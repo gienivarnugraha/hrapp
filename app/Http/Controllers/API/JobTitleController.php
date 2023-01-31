@@ -22,7 +22,7 @@ class JobTitleController extends Controller
             return $job['skills'] = $this->getSkills($job->competencies);
         });
         
-        return response($jobs);
+        return response()->json($jobs);
     }
 
     public function getSkills($competencies){

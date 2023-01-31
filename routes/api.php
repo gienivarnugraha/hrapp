@@ -31,3 +31,4 @@ Route::apiResource('job-title', JobTitleController::class);
 Route::apiResource('competencies', CompetencyController::class);
 Route::apiResource('peoples', PeopleController::class);
 Route::apiResource('events', EventController::class);
+Route::post('events/generate', [EventController::class,'generate']);

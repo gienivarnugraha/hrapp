@@ -4,6 +4,7 @@ import vuetify from 'vite-plugin-vuetify'
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite'
 import Pages from 'vite-plugin-pages'
+import Components from 'unplugin-vue-components/vite'
 
 export default defineConfig({
     plugins: [
@@ -31,6 +32,12 @@ export default defineConfig({
                 'vue-router',
                 'pinia',
             ]
+        }),
+        Components({
+            dirs: ['resources/js/components'],
+            dts: 'resources/js/components.d.ts',
+            // deep: true,
+            //directoryAsNamespace: true
         }),
         Pages({
          dirs:'resources/js/pages',

@@ -51,7 +51,7 @@ class EventFactory extends Factory
       $startDate = $this->faker->dateTimeBetween('-4 weeks', '+4 weeks');
       // Round to nearest 15
       $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
-      $startDate->setTime($startDate->format('H'), date('i', $roundedStartSeconds), 0);
+      $startDate->setTime(date('H', rand(32400,54000)), date('i', $roundedStartSeconds), 0);
   
       $endDate = clone $startDate;
       // Add one or zero days to end date and the add 30 minutes

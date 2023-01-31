@@ -25,14 +25,27 @@
                     <v-card-title> {{ item.name }}</v-card-title>
                     <v-card-subtitle> Competencies: </v-card-subtitle>
                     <v-card-text>
-                      <v-list lines="one" density="compact" disabled item-value="id" :items="item.skills"
+                      <!-- <v-list lines="one" density="compact" item-value="id" :items="item.skills"
                         item-title="name">
-                        <template v-slot:item="{ title, value, index }">
+                        <template #item="{ title, value, index }">
                           <v-list-item>
-                            {{ title }}
+                            {{ title }} {{ value}}
                           </v-list-item>
                         </template>
-                      </v-list>
+                      </v-list> -->
+                      <competency-list :items="item.skills">
+                        <template #item="{ item: skill }">
+                          {{ skill }}
+                          <v-list-item>
+                            <p>
+                              <v-icon icon="mdi-circle-medium"></v-icon>
+
+                              {{ skill }}
+                            </p>
+                          </v-list-item>
+                        </template>
+                      </competency-list>
+
                     </v-card-text>
 
 

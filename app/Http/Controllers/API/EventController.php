@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+use Faker\Factory;
 use App\Models\Event;
 use App\Models\People;
+use App\Models\JobTitle;
+use App\Models\Competency;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -80,4 +83,71 @@ class EventController extends Controller
 
     return response()->json(['deleted' => true, 'event_id' => $event->getKey()]);
   }
+
+  public function generate(Request $request){
+    ['people_id' => $peopleId, 'next_position' => $nextPosition] = $request->all();
+    
+    $faker = Factory::create();
+
+    $people = People::find($peopleId);
+
+    $requiredCompetencies = JobTitle::find($people->jobTitle->id)->competencies->where('pivot.position',$nextPosition)->pluck('id')->all();
+
+    $competencies = $people->competencies->pluck('id')->all();
+    
+    $diff = collect($requiredCompetencies)->diff($competencies)->all();
+
+    $schedule = collect();
+
+    collect($diff)->each(function($requiredCompetencyId) use ($faker, $schedule){
+     
+      $competency = Competency::find($requiredCompetencyId);
+
+      [$startDate, $endDate] = $this->getDates();
+
+      $event = Event::where('competency_id', $requiredCompetencyId)->first();
+
+      if($event===null){
+        $event = Event::create([
+          'competency_id' => $requiredCompetencyId,
+          'title'         => "Training {$competency->name}",
+          'color'         => $faker->hexColor(),
+          'start_date'    => $startDate->format('Y-m-d'),
+          'start_time'    => $startDate->format('H:i:s'),
+          'end_date'      => $endDate->format('Y-m-d'),
+          'end_time'      => $endDate->format('H:i:s'),
+        ]);
+      } 
+
+      $schedule->push([
+        "competency-{$requiredCompetencyId}" => $event->fullStartDate
+      ]);
+
+    });
+
+    return response()->json($schedule);
+
+  }
+
+      /**
+     * Get the dates for the activity
+     *
+     * @return array
+     */
+    protected function getDates()
+    {
+      $faker = Factory::create();
+
+      $startDate = $faker->dateTimeBetween('+1 weeks', '+4 weeks');
+      // Round to nearest 15
+      $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
+      $startDate->setTime(date('H', rand(32400,54000)), date('i', $roundedStartSeconds), 0);
+  
+      $endDate = clone $startDate;
+      // Add one or zero days to end date and the add 30 minutes
+      $endDate->add(new \DateInterval('P' . rand(0, 1) . 'D'));
+      $endDate->add(new \DateInterval('PT30M'));
+  
+      return [$startDate, $endDate];
+    }
 }

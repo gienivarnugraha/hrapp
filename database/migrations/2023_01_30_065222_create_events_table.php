@@ -28,6 +28,8 @@ return new class extends Migration
             $table->time('end_time')->nullable()->index();
 
             $table->text('rrule')->nullable();
+
+            $table->foreignId('competency_id')->references('id')->on('competencies');
             
             $table->timestamps();
         });

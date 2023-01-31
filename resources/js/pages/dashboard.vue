@@ -62,7 +62,7 @@ export default {
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: false
+          right: 'dayGridMonth'
         },
 
         // TODO get from current user
@@ -405,7 +405,7 @@ export default {
      * @return {Object}
      */
     createEventTitleDomNodes(arg) {
-      let event;
+      let event = document.createElement('span');
 
       if (arg.event.allDay) {
         event = arg.event.title;
@@ -570,17 +570,17 @@ export default {
 
         <template #eventContent="arg">
           <v-tooltip bottom color="teal">
-                    <template v-slot:activator="{ props }">
-                        <div style="min-height:20px;" v-bind="props" >
-                          {{arg.event.title}}
-                        </div>
-                    </template>
-                    <div style="text-align:left;">
-                        Time: {{arg.event.extendedProps.start}}<br />
-                        Description: {{arg.event.extendedProps.description}}<br />
-                        Project {{arg.event.title}}<br />
-                    </div>
-                </v-tooltip>
+            <template v-slot:activator="{ props }">
+              <div style="min-height:20px;" v-bind="props">
+                {{ createEventTitleDomNodes(arg) }}
+              </div>
+            </template>
+            <div style="text-align:left;">
+              Title: {{ arg.event.title }}<br />
+              Description: {{ arg.event.extendedProps.description }}<br />
+              Time: {{ arg.event.extendedProps.start }}<br />
+            </div>
+          </v-tooltip>
 
         </template>
       </FullCalendar>

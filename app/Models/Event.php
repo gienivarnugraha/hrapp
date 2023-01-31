@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -21,6 +22,7 @@ class Event extends Model
     'end_date',
     'end_time',
     'rrule',
+    'competency_id'
   ];
 
   /**
@@ -31,6 +33,16 @@ class Event extends Model
   public function peoples(): BelongsToMany
   {
     return $this->belongsToMany(People::class);
+  }
+
+  /**
+   * Get the user that owns the Events
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+   */
+  public function competency(): BelongsTo
+  {
+    return $this->belongsTo(Competency::class);
   }
 
   /**
