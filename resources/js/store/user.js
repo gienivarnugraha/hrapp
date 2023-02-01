@@ -1,25 +1,49 @@
+import axios from 'axios';
+import _ from 'lodash';
+import Cookies from 'universal-cookie';
 
-export const useUserStore = defineStore('user',{
+const cookies = new Cookies();
+
+export const useUserStore = defineStore('user', {
   state: () => ({
     user: {},
-    authenticated: false,
   }),
-  getters:{
-    isAuthenticated: (state) => state.authenticated || Boolean( localStorage.getItem('authenticated')),
-    currentUser: (state) => state.user || localStorage.getItem('user'),
+  getters: {
+    isAuthenticated: (state) => !_.isEmpty(state.user),
+    currentUser: (state) => state.user
   },
-  actions:{
-    login(user){
-      this.user = user;
-      this.authenticated = true;
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('authenticated', true)
+  actions: {
+    getUser(){
+      axios.get('/api/user').then(({data:user})=> {
+        this.user = user;
+        return user
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    async login({email, password}) {
+      try {
+        await axios.get('sanctum/csrf-cookie')
+  
+        const login = await axios.post('api/login', {
+          email: email.value,
+          password: password.value
+        })
+
+        this.getUser();
+        
+  
+      } catch (error) {
+        console.log('loginerror', error);
+      }
     },
     logout() {
-      this.user = {};
-      this.authenticated = false;
-      localStorage.removeItem('user')
-      localStorage.removeItem('authenticated')
+      axios.post('/api/logout').then(response => {
+        this.user = {};
+      }).catch(error => {
+        console.log('logoout error: ',error);
+      });
+
     }
   }
 })

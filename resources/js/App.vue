@@ -22,8 +22,8 @@
 
     <v-navigation-drawer v-model="drawer" temporary border v-if="isAuthenticated">
       <v-list>
-        <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg" :title="user.name"
-          :subtitle="user.nik"></v-list-item>
+        <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg" :title="currentUser.name"
+          :subtitle="currentUser.nik"></v-list-item>
       </v-list>
 
       <v-divider></v-divider>
@@ -45,10 +45,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from './store/user';
 
 const router = useRouter()
-const userStore = useUserStore()
-
-const isAuthenticated = userStore.isAuthenticated
-const user = userStore.user
+const { isAuthenticated, currentUser} = storeToRefs(useUserStore())
+const {logout:logoutService} = useUserStore()
 
 const menus = [
   { id: 1, icon: 'mdi-folder', title: 'Dashboard', value: 'dashboard', to: '/dashboard' },
@@ -68,7 +66,7 @@ function onClick() {
 const logout = async () => {
   loading.value = true
   try {
-    await axios.post('/logout')
+    await logoutService()
 
     router.push({ name: 'login' })
 

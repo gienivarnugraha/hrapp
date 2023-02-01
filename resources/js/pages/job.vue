@@ -21,31 +21,18 @@
               </tr>
               <tr v-if="isExpanded(item)">
                 <td :colspan="headers.length" class="py-4">
-                  <v-card variant="outlined">
-                    <v-card-title> {{ item.name }}</v-card-title>
-                    <v-card-subtitle> Competencies: </v-card-subtitle>
+                  <v-card elevation="0" :title="item.name" prepend-icon="mdi-briefcase"
+                    subtitle="Required Competencies">
                     <v-card-text>
-                      <!-- <v-list lines="one" density="compact" item-value="id" :items="item.skills"
-                        item-title="name">
-                        <template #item="{ title, value, index }">
-                          <v-list-item>
-                            {{ title }} {{ value}}
+                      <v-list lines="one" density="compact" item-value="id" :items="item.skills" item-title="name">
+                        <template #item="{ title, value }">
+                          <v-list-item class="mb-2">
+                            <v-card variant="tonal" color="primary" class="pb-2">
+                              <v-card-text> {{ title }} </v-card-text>
+                            </v-card>
                           </v-list-item>
                         </template>
-                      </v-list> -->
-                      <competency-list :items="item.skills">
-                        <template #item="{ item: skill }">
-                          {{ skill }}
-                          <v-list-item>
-                            <p>
-                              <v-icon icon="mdi-circle-medium"></v-icon>
-
-                              {{ skill }}
-                            </p>
-                          </v-list-item>
-                        </template>
-                      </competency-list>
-
+                      </v-list>
                     </v-card-text>
 
 

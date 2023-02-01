@@ -14,6 +14,8 @@ use App\Http\Controllers\ApplicationController;
 |
 */
 
-Auth::routes(['register' => false]);
+Route::get('/login', function () {
+  return view('application');
+})->name('login');
 
-Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '[\/\w\.-]*')->middleware('auth');  
+Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '[\/\w\.-]*')->middleware('auth:web');  

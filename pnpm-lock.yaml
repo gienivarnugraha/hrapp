@@ -21,6 +21,7 @@ specifiers:
   postcss: ^8.4.21
   rrule: ^2.7.1
   sass: ^1.57.1
+  universal-cookie: ^4.0.4
   unplugin-auto-import: ^0.12.2
   unplugin-vue-components: ^0.22.12
   vite: ^4.0.4
@@ -44,6 +45,7 @@ dependencies:
   moment-timezone: 0.5.40
   pinia: 2.0.29_vue@3.2.45
   rrule: 2.7.1
+  universal-cookie: 4.0.4
   vite-plugin-vuetify: 1.0.2_l54dx3ntqreabui4gzakb57alm
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
@@ -383,6 +385,10 @@ packages:
       picomatch: 2.3.1
     dev: true
 
+  /@types/cookie/0.3.3:
+    resolution: {integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==}
+    dev: false
+
   /@types/debug/4.1.7:
     resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
     dependencies:
@@ -579,6 +585,11 @@ packages:
 
   /commondir/1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
+    dev: false
+
+  /cookie/0.4.2:
+    resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
+    engines: {node: '>= 0.6'}
     dev: false
 
   /csstype/2.6.21:
@@ -1371,6 +1382,13 @@ packages:
     transitivePeerDependencies:
       - rollup
     dev: true
+
+  /universal-cookie/4.0.4:
+    resolution: {integrity: sha512-lbRVHoOMtItjWbM7TwDLdl8wug7izB0tq3/YVKhT/ahB4VDvWMyvnADfnJI8y6fSvsjh51Ix7lTGC6Tn4rMPhw==}
+    dependencies:
+      '@types/cookie': 0.3.3
+      cookie: 0.4.2
+    dev: false
 
   /unplugin-auto-import/0.12.2:
     resolution: {integrity: sha512-hC4w0GZjPjmLtrxV0u10XO350V9eCtQyEyifXr7B9UGD7SvbbIvKuOcHt58Zd4FAqZJXKWoXkpr9mdhBp85Usw==}

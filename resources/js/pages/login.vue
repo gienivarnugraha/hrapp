@@ -40,7 +40,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/user';
 
 const router = useRouter()
-const userStore = useUserStore()
+const { login}  = useUserStore()
 
 const valid = ref(false)
 const password = ref('')
@@ -57,16 +57,7 @@ async function submit() {
 
     if (valid) {
 
-      await axios.get('sanctum/csrf-cookie')
-
-      await axios.post('login', {
-        email: email.value,
-        password: password.value
-      })
-
-      const { data: user } = await axios.get('/api/user')
-
-      userStore.login(user)
+      await login({email, password})
 
       await router.push({ name: 'dashboard' })
 
@@ -87,5 +78,6 @@ function reset() {
 <route lang="yaml">
   name: login
   meta:
+    title: Login
     requiresAuth: false
 </route>

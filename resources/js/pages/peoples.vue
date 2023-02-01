@@ -67,12 +67,11 @@
                           <v-col cols="6">
                             <v-card-subtitle> Competencies: </v-card-subtitle>
                             <competency-list :items="item.skills">
-                              <template #item="{ item: people }">
+                              <template #item="{ item: skill }">
                                 <v-list-item>
-                                  <p>
-                                    <v-icon icon="mdi-circle-medium"></v-icon>
-                                    {{ people.name }}
-                                  </p>
+                                  <v-card variant="tonal" color="primary" class="pb-2">
+                                      <v-card-text> {{ skill.name }} </v-card-text>
+                                    </v-card>
                                 </v-list-item>
                               </template>
                             </competency-list>
@@ -103,30 +102,14 @@
                               <competency-list :items="item.required_skills[item['next_position']]">
                                 <template #item="{ item: skill, index }">
                                   <v-list-item>
-                                    <v-card variant="tonal" class="pb-2">
-                                      <v-card-text> {{ skill.name }} </v-card-text>
-                                      <v-card-subtitle> <v-icon> mdi-clock </v-icon> Training start at: {{ skill.start_date }} </v-card-subtitle>
-                                    </v-card>
-                                    <!--  <p :class="{
-                                      'text-success': item.skills.find((i) => i.id === skill.id),
-                                      'text-error': !item.skills.find((i) => i.id === skill.id),
-                                      'text-info': skill.start_date
-                                    }">
-                                      <v-icon
+                                    <v-card variant="tonal" :color=" item.skills.find((i) => i.id === skill.id) ? 'success' : 'error'" class="pb-2">
+                                      <v-card-text> {{ skill.name }} 
+                                        <v-icon
                                         :icon="item.skills.find((i) => i.id === skill.id) ? 'mdi-check' : 'mdi-close'">
                                       </v-icon>
-
-                                      <span>
-                                        -
-                                        {{ skill.name }}
-
-                                      </span>
-
-                                    </p>
-                                    <p v-if="skill.start_date"> Training Start at: {{
-                                      skill.start_date
-                                    }}
-                                    </p>  -->
+                                    </v-card-text>
+                                      <v-card-subtitle v-if="skill.start_date"> <v-icon> mdi-clock </v-icon> Training start at: {{ skill.start_date }} </v-card-subtitle>
+                                    </v-card>
                                   </v-list-item>
                                 </template>
                               </competency-list>
@@ -234,5 +217,6 @@ onMounted(async () => {
 <route lang="yaml">
   name: peoples
   meta:
+    title: Peoples
     requiresAuth: true
 </route>

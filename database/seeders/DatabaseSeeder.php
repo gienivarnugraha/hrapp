@@ -37,6 +37,10 @@ class DatabaseSeeder extends Seeder
 
         RoleSeeder::run();
 
+        User::factory()->create([
+            'email' => 'admin@admin.com',
+        ]);
+
         User::factory()
             ->count(3)
             ->create()

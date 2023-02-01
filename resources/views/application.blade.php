@@ -16,13 +16,6 @@
 
     <!-- Scripts -->
     @vite(['resources/js/app.js'])
-
-
-    <script>
-    const user = {{Js::from( auth()->check() ? auth()->user()->toJson() : null )}}
-    console.log(user);
-</script>
-
 </head>
 <body>
     <div id="app">

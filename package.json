@@ -33,6 +33,7 @@
         "moment-timezone": "^0.5.40",
         "pinia": "^2.0.29",
         "rrule": "^2.7.1",
+        "universal-cookie": "^4.0.4",
         "vite-plugin-vuetify": "^1.0.2",
         "vue": "^3.2.45",
         "vue-router": "^4.1.6",
