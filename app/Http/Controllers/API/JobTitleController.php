@@ -16,11 +16,12 @@ class JobTitleController extends Controller
      */
     public function index()
     {
-        $jobs = JobTitle::all();
+        $jobs = JobTitle::paginate(25);
 
         $jobs->map(function($job){
             return $job['skills'] = $this->getSkills($job->competencies);
         });
+
         
         return response()->json($jobs);
     }

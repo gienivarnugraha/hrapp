@@ -12,6 +12,7 @@ use App\Models\Competency;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Seeder;
 use Database\Seeders\RoleSeeder;
+use Database\Seeders\PeopleSeeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Container\Container;
 use Database\Seeders\JobTitleSeeder;
@@ -34,6 +35,8 @@ class DatabaseSeeder extends Seeder
         JobTitleSeeder::run();
 
         CompetencySeeder::run();
+        
+        PeopleSeeder::run();
 
         RoleSeeder::run();
 
@@ -47,17 +50,6 @@ class DatabaseSeeder extends Seeder
             ->each(function (User $user) {
                 $role = Role::all()->random();
                 $user->assignRole($role);
-            });
-
-        People::factory()
-            ->count(10)
-            ->has(Event::factory()->count(2)->for(Competency::inRandomOrder()->first()))
-            ->create()
-            ->each(function (People $people) {
-
-                $competency = Competency::inRandomOrder()->limit(random_int(1, 6))->get();
-
-                $people->competencies()->attach($competency);
             });
 
         JobTitle::all()->each(function (JobTitle $jobTitle) {

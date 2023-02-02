@@ -17,14 +17,11 @@ class JobTitleSeeder extends Seeder
     {
         $csvFile = fopen(base_path("database/csv/job.csv"), "r");
   
-        $firstline = true;
         while (($data = fgetcsv($csvFile)) !== FALSE) {
-            if (!$firstline) {
                 JobTitle::create([
-                    "name" => $data['0'],
+                    "id" => $data['0'],
+                    "name" => $data['1'],
                 ]);    
-            }
-            $firstline = false;
         }
    
         fclose($csvFile);

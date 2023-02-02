@@ -630,5 +630,6 @@ export default {
 <route lang="yaml">
   name: dashboard
   meta:
+    title: Dashboard
     requiresAuth: true
 </route>

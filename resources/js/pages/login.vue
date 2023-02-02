@@ -1,25 +1,16 @@
 <template>
   <v-container class="pa-4 d-flex justify-center align-center" style="height:100%;">
-    <v-card class="pa-4" border align="center" min-width="640px" border-color="primary">
+    <v-card class="pa-4 w-50" border align="center" border-color="primary">
       <v-card-title prepend-icon="mdi-home">Login</v-card-title>
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-
           <v-text-field class="my-4" color="primary" v-model="email" :rules="emailRules" label="E-mail"
             required></v-text-field>
 
           <v-text-field class="my-4" color="primary" v-model="password" :counter="10" label="Password" type="password"
             required></v-text-field>
 
-          <!-- 
-              <v-checkbox
-                v-model="checkbox"
-                :rules="[v => !!v || 'You must agree to continue!']"
-                label="Do you agree?"
-                required
-              ></v-checkbox>
-          -->
           <v-btn color="primary" class="me-4" @click="submit">
             Submit
           </v-btn>
@@ -30,8 +21,6 @@
 
         </v-form>
       </v-card-text>
-
-
     </v-card>
   </v-container>
 </template>
@@ -40,7 +29,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/user';
 
 const router = useRouter()
-const { login}  = useUserStore()
+const { login } = useUserStore()
 
 const valid = ref(false)
 const password = ref('')
@@ -57,7 +46,7 @@ async function submit() {
 
     if (valid) {
 
-      await login({email, password})
+      await login({ email, password })
 
       await router.push({ name: 'dashboard' })
 

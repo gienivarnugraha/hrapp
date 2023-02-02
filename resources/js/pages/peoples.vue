@@ -17,7 +17,8 @@
       </v-card-title>
 
       <v-card-text>
-        <v-table fixed-header height="75vh">
+        <Loading v-if="loading"></Loading>
+        <v-table fixed-header height="75vh" v-if="!loading">
           <thead>
             <tr>
               <th v-for="header in headers" :key="header.title" :class="header.class">
@@ -33,14 +34,12 @@
                 <td class="text-center">{{ item.org }}</td>
                 <td>{{ item.job_title.name }}</td>
                 <td class="text-center">{{ item.position }}</td>
-                <td class="text-center"> <v-icon @click="onExpand(item)"> {{
-                  isExpanded(item) ?'mdi-menu-up'
-                    : 'mdi-menu-down'
-                }}</v-icon> </td>
+                <td class="text-center"> <v-btn @click="onExpand(item)" variant="text" size="small"
+                    :loading="item.loadingComptencies" :icon="item.expanded ? 'mdi-menu-up'
+                    : 'mdi-menu-down'"></v-btn> </td>
               </tr>
-              <tr v-if="isExpanded(item)">
-                <v-slide-y-transition>
-
+              <v-slide-y-transition>
+                <tr v-if="item.expanded && !item.loadCompetencies">
                   <td :colspan="headers.length" class="py-4">
                     <v-card variant="outlined" color="indigo">
                       <v-card-title class="px-8 my-4">
@@ -70,25 +69,28 @@
                               <template #item="{ item: skill }">
                                 <v-list-item>
                                   <v-card variant="tonal" color="primary" class="pb-2">
-                                      <v-card-text> {{ skill.name }} </v-card-text>
-                                    </v-card>
+                                    <v-card-text> {{ skill.name }} </v-card-text>
+                                  </v-card>
                                 </v-list-item>
                               </template>
                             </competency-list>
                           </v-col>
+
                           <v-col cols="6">
-                            <v-card-subtitle class="mb-4" v-if="item['next_position']"> Required Competencies to Promote
+                            <v-card-subtitle class="mb-4" v-if="expanded[findIndex(item)]['next_position']"> Required
+                              Competencies to Promote
                               into {{
-                              item['next_position'] }} </v-card-subtitle>
+                                expanded[findIndex(item)]['next_position']
+                              }} </v-card-subtitle>
 
                             <v-row class=" px-4">
-                              <v-col :cols="item['next_position'] ? 6 : 12">
+                              <v-col :cols="expanded[findIndex(item)]['next_position'] ? 6 : 12">
                                 <v-select class="w-100" :items="positions"
                                   v-model="expanded[findIndex(item)]['next_position']" label="Promote to"
                                   density="comfortable"></v-select>
 
                               </v-col>
-                              <v-col cols="6" v-if="item['next_position']">
+                              <v-col cols="6" v-if="expanded[findIndex(item)]['next_position']">
                                 <v-btn stacked size="x-small" class="w-100" color="primary" :rounded="false"
                                   prepend-icon="mdi-sync" variant="flat" @click="generateSchedule(item)">Generate
                                   Schedule</v-btn>
@@ -96,19 +98,21 @@
                               </v-col>
                             </v-row>
 
-
-
-                            <v-slide-y-transition v-if="item['next_position']">
-                              <competency-list :items="item.required_skills[item['next_position']]">
+                            <v-slide-y-transition v-if="expanded[findIndex(item)]['next_position']">
+                              <competency-list
+                                :items="item.required_skills[expanded[findIndex(item)]['next_position']]">
                                 <template #item="{ item: skill, index }">
                                   <v-list-item>
-                                    <v-card variant="tonal" :color=" item.skills.find((i) => i.id === skill.id) ? 'success' : 'error'" class="pb-2">
-                                      <v-card-text> {{ skill.name }} 
+                                    <v-card variant="tonal"
+                                      :color="item.skills.find((i) => i.id === skill.id) ? 'success' : 'error'"
+                                      class="pb-2">
+                                      <v-card-text> {{ skill.name }}
                                         <v-icon
-                                        :icon="item.skills.find((i) => i.id === skill.id) ? 'mdi-check' : 'mdi-close'">
-                                      </v-icon>
-                                    </v-card-text>
-                                      <v-card-subtitle v-if="skill.start_date"> <v-icon> mdi-clock </v-icon> Training start at: {{ skill.start_date }} </v-card-subtitle>
+                                          :icon="item.skills.find((i) => i.id === skill.id) ? 'mdi-check' : 'mdi-close'">
+                                        </v-icon>
+                                      </v-card-text>
+                                      <v-card-subtitle v-if="skill.start_date"> <v-icon> mdi-clock </v-icon> Training
+                                        start at: {{ skill.start_date }} </v-card-subtitle>
                                     </v-card>
                                   </v-list-item>
                                 </template>
@@ -117,27 +121,28 @@
                           </v-col>
 
                         </v-row>
-
-
-
-
-
                       </v-card-text>
 
                     </v-card>
 
                   </td>
-                </v-slide-y-transition>
-              </tr>
+                </tr>
+              </v-slide-y-transition>
             </template>
           </tbody>
         </v-table>
+
+        <v-divider class="my-2"></v-divider>
+
+        <v-pagination v-model="pagination.page" :length="pagination.totalPage" @update:modelValue="getPeoples($event)" @next="getPeoples($event)"
+          @prev="getPeoples($event)"></v-pagination>
       </v-card-text>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
+import { nextTick } from 'vue';
 
 const headers = [
   { title: "Name", class: "text-left", },
@@ -154,21 +159,61 @@ const positions = [
   { title: "Senior", value: 'senior' },
 ]
 
+const pagination = ref({
+  page: 1,
+  totalPage: 1,
+})
+
 const items = ref([])
 
 const expanded = ref([])
 
-const isExpanded = (item) => expanded.value.includes(item)
-
 const findIndex = (item) => expanded.value.findIndex(exp => exp.id == item.id)
 
-const onExpand = (item) => {
+const getCompetencies = async (item) => {
+  try {
+    const { data: people } = await axios.get(`/api/peoples/${item.id}`)
+
+    item.skills = people.skills
+
+    item.required_skills = people.required_skills
+
+    item.next_position = ref('')
+
+    item['expanded'] = true
+
+    return item
+
+  } catch (error) {
+    console.log(error);
+  } finally {
+
+  }
+}
+
+const onExpand = async (item) => {
   const index = findIndex(item)
 
   if (index < 0) {
-    expanded.value.push(item)
+    try {
+      item.loadCompetencies = true
+
+      const people = await getCompetencies(item)
+
+      expanded.value.push(people)
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      item.loadCompetencies = false
+    }
+
   } else {
-    expanded.value.splice(index, 1)
+    nextTick(() => {
+      expanded.value.splice(index, 1)
+      item.expanded = false
+    })
+
   }
 }
 
@@ -200,17 +245,27 @@ const generateSchedule = async (people) => {
 
 const loading = ref(true)
 
-onMounted(async () => {
-  try {
-    const { data: peoples } = await axios.get('/api/peoples')
+const getPeoples = async (page = 1) => {
+  loading.value = true
 
-    items.value = peoples
+  try {
+    const { data: peoples } = await axios.get(`/api/peoples?page=${page}`)
+
+    items.value = peoples.data
+
+      pagination.value.page = peoples.current_page
+      pagination.value.totalPage = peoples.total_page
 
   } catch (error) {
     console.log(error);
   } finally {
-    loading.value = false;
+    nextTick(() => loading.value = false
+    )
   }
+}
+
+onMounted(() => {
+  getPeoples()
 })
 </script>
 

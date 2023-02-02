@@ -68,5 +68,6 @@ onMounted(async()=>{
 <route lang="yaml">
   name: competencies
   meta:
+    title: Competencies
     requiresAuth: true
 </route>

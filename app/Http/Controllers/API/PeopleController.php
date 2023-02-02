@@ -22,36 +22,21 @@ class PeopleController extends Controller
      */
     public function index()
     {
-        $peoples = People::with(['jobTitle'])->get();
+        $perpage = 25;
+        $paginator = People::with('jobTitle')->orderBy('id')->simplePaginate($perpage)->toArray();
+        $paginator['total']= People::count();
+        $paginator['total_page']= ceil( People::count() / $perpage) ;
 
-        $peoples->map(function ($people) {
-            $competencies = JobTitle::find($people->jobTitle->id)->competencies;
 
-            $junior = $competencies->where('pivot.position','junior');
-            $medior = $competencies->where('pivot.position','medior');
-            $senior = $competencies->where('pivot.position','senior');
-
-            $requiredSkills = [
-                'junior' => $this->getSkills($junior),
-                'medior' => $this->getSkills($medior),
-                'senior' => $this->getSkills($senior),
-            ];
-
-            $people['skills'] = $this->getSkills($people->competencies);
-
-            $people['required_skills'] = $requiredSkills;
-
-            return $people;
-        });
-
-        return response()->json($peoples);
+        return response()->json($paginator);
     }
 
-    public function getSkills($competencies){
+    public function getSkills($competencies)
+    {
         $skills = collect([
-            ['id' => 'hard', 'type' => 'subheader', 'name' => 'Hard Skills'  ],
+            ['id' => 'hard', 'type' => 'subheader', 'name' => 'Hard Skills'],
             ['id' => 'divider#1', 'type' => 'divider'],
-            ['id' => 'soft', 'type' => 'subheader', 'name' => 'Soft Skills' ],
+            ['id' => 'soft', 'type' => 'subheader', 'name' => 'Soft Skills'],
             ['id' => 'divider#2', 'type' => 'divider'],
             ['id' => 'doa', 'type' => 'subheader', 'name' => 'DOA'],
         ]);
@@ -69,11 +54,11 @@ class PeopleController extends Controller
 
             $event = Event::where('competency_id', $competency->id)->first();
 
-            if($event == null){
-                $skill = [ 'type' =>'item', 'name' => "{$competency->name}", 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
+            if ($event == null) {
+                $skill = ['type' => 'item', 'name' => "{$competency->name}", 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
             } else {
                 $startDate = Carbon::parse($event->fullStartDate)->format('Y-m-d H:i');
-                $skill = [ 'type' =>'item', 'name' => $competency->name, 'start_date'=>$startDate, 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
+                $skill = ['type' => 'item', 'name' => $competency->name, 'start_date' => $startDate, 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
             }
 
 
@@ -102,7 +87,24 @@ class PeopleController extends Controller
      */
     public function show(People $people)
     {
-        //
+        $people = People::find($people->id);
+
+        $competencies = JobTitle::find($people->jobTitle->id)->competencies;
+
+        $junior = $competencies->where('pivot.position', 'junior');
+        $medior = $competencies->where('pivot.position', 'medior');
+        $senior = $competencies->where('pivot.position', 'senior');
+
+        $requiredSkills = [
+            'junior' => $this->getSkills($junior),
+            'medior' => $this->getSkills($medior),
+            'senior' => $this->getSkills($senior),
+        ];
+        
+        return response()->json([
+            'skills' => $this->getSkills($people->competencies),
+            'required_skills' => $requiredSkills,
+        ]);
     }
 
     /**

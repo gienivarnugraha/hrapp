@@ -44,6 +44,10 @@
           </tbody>
         </v-table>
       </v-card-text>
+      <v-card-actions>
+        <v-pagination v-model="pagination.page" :length="pagination.lastPage" @next="getJobs(pagination.page)"
+          @prev="getJobs(pagination.page)"></v-pagination>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -54,6 +58,11 @@ const headers = [
   { title: "Name", class: "text-left", },
   { title: "Action", class: "text-center w-25", },
 ]
+
+const pagination = ref({
+  page: 1,
+})
+
 
 const items = ref([])
 
@@ -72,15 +81,26 @@ const onExpand = (item) => {
 
 const loading = ref(true)
 
-onMounted(async () => {
+const getJobs = async (page=1) => {
   try {
-    const { data: job } = await axios.get('/api/job-title')
-    items.value = job
+    const { data: job } = await axios.get(`/api/job-title?page=${page}`)
+
+    items.value = job.data
+
+    nextTick(()=>{
+      pagination.value.page = job.current_page
+      pagination.value.lastPage = job.last_page
+    })
+    
   } catch (error) {
     console.log(error);
   } finally {
     loading.value = false;
   }
+}
+
+onMounted(()=>{
+  getJobs()
 })
 </script>
 
@@ -88,5 +108,6 @@ onMounted(async () => {
 <route lang="yaml">
   name: job
   meta:
+    title: Jobs
     requiresAuth: true
 </route>
