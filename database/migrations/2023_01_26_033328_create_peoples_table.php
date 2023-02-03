@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('org');
             $table->string('position');
             $table->foreignId('job_title_id')->constrained();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

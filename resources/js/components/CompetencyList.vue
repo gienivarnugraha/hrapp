@@ -1,12 +1,18 @@
 <template>
-  <v-list :lines="lines" density="compact" :items="items" :item-value="itemValue" :item-title="itemTitle">
-    <template v-for="(item,index) in items" :key="item.id">
-      <v-list-subheader v-if="item.type === 'subheader'" color="primary"> {{ item.name }} </v-list-subheader>
-      <slot v-else-if="item.type==='item'" name="item" :index="index" :item="item"></slot>
-
-      <v-divider  class="my-2" v-else-if="item.type==='divider'"></v-divider>
-    </template>
-  </v-list>
+  <div>
+    <v-list-subheader>{{ header }}</v-list-subheader>
+    <v-list v-if="items" :lines="lines" density="compact" :item-value="itemValue" :items="items"
+      :item-title="itemTitle">
+      <template #item="{ title, value }">
+        <v-list-item class="mb-2">
+          <v-card variant="tonal" color="primary" class="pb-2">
+            <v-card-text> {{ title }} </v-card-text>
+          </v-card>
+        </v-list-item>
+      </template>
+    </v-list>
+    <v-list-item v-else class="mb-2"> None</v-list-item>
+  </div>
 </template>
 
 <script setup>
@@ -17,6 +23,8 @@ const props = defineProps({
     type: String,
     default: 'id',
   },
+  header: String,
+  type: String,
   itemTitle: {
     type: String,
     default: 'name',

@@ -1,4 +1,5 @@
 import './plugins/bootstrap';
+import '../sass/app.scss'
 import Vuetify from './plugins/vuetify.js';
 import { createRouter, createWebHistory } from 'vue-router'
 import { createPinia } from 'pinia'

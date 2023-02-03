@@ -5,12 +5,13 @@ namespace App\Models;
 use App\Models\JobTitle;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Competency extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = ['competency', 'type'];
+    protected $fillable = ['name', 'type'];
 
     public function peoples()
     {

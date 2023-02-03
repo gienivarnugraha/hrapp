@@ -65,32 +65,27 @@
                         <v-row>
                           <v-col cols="6">
                             <v-card-subtitle> Competencies: </v-card-subtitle>
-                            <competency-list :items="item.skills">
-                              <template #item="{ item: skill }">
-                                <v-list-item>
-                                  <v-card variant="tonal" color="primary" class="pb-2">
-                                    <v-card-text> {{ skill.name }} </v-card-text>
-                                  </v-card>
-                                </v-list-item>
-                              </template>
-                            </competency-list>
+                            <competency-list :items="item.skills['hard']" header="Hard Skills"></competency-list>
+                            <competency-list :items="item.skills['soft']" header="Soft Skills"></competency-list>
+                            <competency-list :items="item.skills['doa']" header="DOA Skills"></competency-list>
+
                           </v-col>
 
                           <v-col cols="6">
-                            <v-card-subtitle class="mb-4" v-if="expanded[findIndex(item)]['next_position']"> Required
+                            <v-card-subtitle class="mb-4" v-if="item.next_position"> Required
                               Competencies to Promote
                               into {{
-                                expanded[findIndex(item)]['next_position']
+                                item.next_position
                               }} </v-card-subtitle>
 
                             <v-row class=" px-4">
-                              <v-col :cols="expanded[findIndex(item)]['next_position'] ? 6 : 12">
+                              <v-col :cols="item.next_position ? 6 : 12">
                                 <v-select class="w-100" :items="positions"
-                                  v-model="expanded[findIndex(item)]['next_position']" label="Promote to"
+                                  v-model="item.next_position" label="Promote to"
                                   density="comfortable"></v-select>
 
                               </v-col>
-                              <v-col cols="6" v-if="expanded[findIndex(item)]['next_position']">
+                              <v-col cols="6" v-if="item.next_position">
                                 <v-btn stacked size="x-small" class="w-100" color="primary" :rounded="false"
                                   prepend-icon="mdi-sync" variant="flat" @click="generateSchedule(item)">Generate
                                   Schedule</v-btn>
@@ -98,25 +93,13 @@
                               </v-col>
                             </v-row>
 
-                            <v-slide-y-transition v-if="expanded[findIndex(item)]['next_position']">
-                              <competency-list
-                                :items="item.required_skills[expanded[findIndex(item)]['next_position']]">
-                                <template #item="{ item: skill, index }">
-                                  <v-list-item>
-                                    <v-card variant="tonal"
-                                      :color="item.skills.find((i) => i.id === skill.id) ? 'success' : 'error'"
-                                      class="pb-2">
-                                      <v-card-text> {{ skill.name }}
-                                        <v-icon
-                                          :icon="item.skills.find((i) => i.id === skill.id) ? 'mdi-check' : 'mdi-close'">
-                                        </v-icon>
-                                      </v-card-text>
-                                      <v-card-subtitle v-if="skill.start_date"> <v-icon> mdi-clock </v-icon> Training
-                                        start at: {{ skill.start_date }} </v-card-subtitle>
-                                    </v-card>
-                                  </v-list-item>
-                                </template>
-                              </competency-list>
+                            <v-slide-y-transition>
+                              <div v-if="item.next_position">
+                                <competency-list :items="item.required_skills[item.next_position]['hard']" header="Hard Skills"></competency-list>
+                                <competency-list :items="item.required_skills[item.next_position]['soft']" header="Soft Skills"></competency-list>
+                                <competency-list :items="item.required_skills[item.next_position]['doa']" header="DOA Skills"></competency-list>
+
+                              </div>
                             </v-slide-y-transition>
                           </v-col>
 
@@ -134,8 +117,8 @@
 
         <v-divider class="my-2"></v-divider>
 
-        <v-pagination v-model="pagination.page" :length="pagination.totalPage" @update:modelValue="getPeoples($event)" @next="getPeoples($event)"
-          @prev="getPeoples($event)"></v-pagination>
+        <v-pagination v-model="pagination.page" :length="pagination.totalPage" @update:modelValue="getPeoples($event)"
+          @next="getPeoples($event)" @prev="getPeoples($event)"></v-pagination>
       </v-card-text>
     </v-card>
   </v-container>
@@ -178,7 +161,7 @@ const getCompetencies = async (item) => {
 
     item.required_skills = people.required_skills
 
-    item.next_position = ref('')
+    item.next_position = ''
 
     item['expanded'] = true
 
@@ -253,8 +236,8 @@ const getPeoples = async (page = 1) => {
 
     items.value = peoples.data
 
-      pagination.value.page = peoples.current_page
-      pagination.value.totalPage = peoples.total_page
+    pagination.value.page = peoples.current_page
+    pagination.value.totalPage = peoples.total_page
 
   } catch (error) {
     console.log(error);

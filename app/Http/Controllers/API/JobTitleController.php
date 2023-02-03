@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\JobTitle;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+
+use function PHPUnit\Framework\isEmpty;
 
 class JobTitleController extends Controller
 {
@@ -16,42 +19,22 @@ class JobTitleController extends Controller
      */
     public function index()
     {
-        $jobs = JobTitle::paginate(25);
+        $jobs = JobTitle::simplePaginate(10);
 
-        $jobs->map(function($job){
-            return $job['skills'] = $this->getSkills($job->competencies);
-        });
-
-        
         return response()->json($jobs);
     }
 
-    public function getSkills($competencies){
-        $skills = collect([
-            ['id' => 'hard', 'type' => 'subheader', 'name' => 'Hard Skills'],
-            ['id' => 'divider#1', 'type' => 'divider'],
-            ['id' => 'soft', 'type' => 'subheader', 'name' => 'Soft Skills'],
-            ['id' => 'divider#2', 'type' => 'divider'],
-            ['id' => 'doa', 'type' => 'subheader', 'name' => 'DOA'],
+      /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\JobTitle  $jobTitle
+     * @return \Illuminate\Http\Response
+     */
+    public function show(JobTitle $jobTitle)
+    {
+        return response()->json([
+            'competencies' => $jobTitle->competencies->groupBy('type')->all(),
         ]);
-
-        $competencies->each(function ($competency) use ($skills) {
-            $index = -1;
-
-            if ($competency->type === 'hard') {
-                $index = $skills->search(fn ($skl) => $skl["id"] === 'hard');
-            } else if ($competency->type === 'soft') {
-                $index = $skills->search(fn ($skl) => $skl["id"] === 'soft');
-            } else if ($competency->type === 'doa') {
-                $index = $skills->search(fn ($skl) => $skl["id"] === 'doa');
-            }
-
-            $skill = ['name' => $competency->name, 'value' => $competency->id, 'id' => 'competency-' . $competency->id];
-
-            $skills->splice($index + 1, 0, [$skill]);
-        });
-
-        return $skills;
     }
 
 
@@ -63,20 +46,11 @@ class JobTitleController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $job = JobTitle::create($request->only('name'));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\JobTitle  $jobTitle
-     * @return \Illuminate\Http\Response
-     */
-    public function show(JobTitle $jobTitle)
-    {
-        //
+        return response()->json($job);
     }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -86,7 +60,17 @@ class JobTitleController extends Controller
      */
     public function update(Request $request, JobTitle $jobTitle)
     {
-        //
+        $jobTitle->update($request->only(['name','competencies'])); 
+
+        if($request->competencies){
+            $competencies = collect($request->competencies)->reduce(function($prev, $next){
+                $nx = collect($next)->pluck('id')->all();
+                return array_merge($prev, $nx);
+            },[]);
+            $jobTitle->competencies()->sync($competencies);
+        }
+
+        return response()->json($jobTitle);
     }
 
     /**
@@ -97,6 +81,8 @@ class JobTitleController extends Controller
      */
     public function destroy(JobTitle $jobTitle)
     {
-        //
+        $jobTitle->delete();
+
+        return response()->json([ 'status' => 'success' ]);
     }
 }

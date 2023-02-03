@@ -10,6 +10,7 @@ use App\Models\People;
 use App\Models\JobTitle;
 use App\Models\Competency;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\PeopleSeeder;
@@ -38,19 +39,7 @@ class DatabaseSeeder extends Seeder
         
         PeopleSeeder::run();
 
-        RoleSeeder::run();
-
-        User::factory()->create([
-            'email' => 'admin@admin.com',
-        ]);
-
-        User::factory()
-            ->count(3)
-            ->create()
-            ->each(function (User $user) {
-                $role = Role::all()->random();
-                $user->assignRole($role);
-            });
+        collect(['MGR', 'ADMIN', 'SME', 'HRBP'])->each(fn($role) => $this->setRole($role) );
 
         JobTitle::all()->each(function (JobTitle $jobTitle) {
             collect(['junior', 'medior', 'senior'])->each(function (string $position) use ($jobTitle) {
@@ -59,5 +48,15 @@ class DatabaseSeeder extends Seeder
                 $jobTitle->competencies()->attach($competency, ['position' => $position]);
             });
         });
+    }
+
+    public function setRole($name){
+        $user = User::factory()->create([
+            'email' =>  Str::lower($name) . '@admin.com',
+        ]);
+
+        $role = Role::create(['name'=>Str::upper($name)]);
+
+        $user->assignRole($role);
     }
 }

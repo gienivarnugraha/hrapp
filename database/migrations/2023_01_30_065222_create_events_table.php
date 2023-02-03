@@ -30,6 +30,8 @@ return new class extends Migration
             $table->text('rrule')->nullable();
 
             $table->foreignId('competency_id')->references('id')->on('competencies');
+
+            $table->softDeletes();
             
             $table->timestamps();
         });

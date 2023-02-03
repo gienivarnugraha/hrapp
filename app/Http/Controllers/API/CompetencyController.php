@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Competency;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Symfony\Component\HttpFoundation\Request;
 
 class CompetencyController extends Controller
 {
+    use SoftDeletes;
     /**
      * Display a listing of the resource.
      *
@@ -18,13 +21,13 @@ class CompetencyController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function groupByType()
     {
-        //
+        return response()->json(Competency::all()->groupBy('type')->all());
     }
 
     /**
@@ -33,31 +36,11 @@ class CompetencyController extends Controller
      * @param  \App\Http\Requests\StoreCompetencyRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($request)
+    public function store(Request $request)
     {
-        //
-    }
+        $competency = Competency::create($request->only(['name', 'type']));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Competency  $Competency
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Competency $Competency)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Competency  $Competency
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Competency $Competency)
-    {
-        //
+        return response()->json($competency);
     }
 
     /**
@@ -67,9 +50,11 @@ class CompetencyController extends Controller
      * @param  \App\Models\Competency  $Competency
      * @return \Illuminate\Http\Response
      */
-    public function update($request, Competency $Competency)
+    public function update(Request $request, Competency $Competency)
     {
-        //
+        $Competency->update($request->only(['name','type']));
+
+        return response()->json(['status' => 'success']);
     }
 
     /**
@@ -80,6 +65,8 @@ class CompetencyController extends Controller
      */
     public function destroy(Competency $Competency)
     {
-        //
+        $Competency->delete();
+
+        return response()->json(['status' => 'success']);
     }
 }

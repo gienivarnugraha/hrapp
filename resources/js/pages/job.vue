@@ -1,6 +1,48 @@
 <template>
   <v-container fluid>
-    <v-card class="pa-4" prepend-icon="mdi-account-group" title="Job Titles" :loading="loading" :disabled="loading">
+    <v-card class="pa-4" :loading="loading" :disabled="loading">
+      <v-card-item class="px-8">
+        <v-row align="center">
+          <v-col cols="1" class="text-center">
+            <v-icon>mdi-briefcase</v-icon>
+          </v-col>
+          <v-col cols="9">
+            <v-card-item>
+              <v-card-title>
+                Add Job Title
+              </v-card-title>
+              <v-card-subtitle> Required Competencies </v-card-subtitle>
+            </v-card-item>
+
+          </v-col>
+          <v-col cols="2" class="text-right">
+            <v-menu  v-model="addJob" :close-on-content-click="false" location="end">
+              <template v-slot:activator="{ props }">
+                <v-btn size="small" class="w-75" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
+                  variant="flat">Add</v-btn>
+              </template>
+
+              <v-card min-width="300" title="Add Job">
+                <v-card-text>
+                  <v-textarea v-model="addModel.name" label="Job Name" density="compact"></v-textarea>
+
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn variant="text" color="error" @click="addJob = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="primary" variant="flat" @click="onSave()">
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-card-item>
+
       <v-card-text>
         <v-table fixed-header height="75vh">
           <thead>
@@ -15,31 +57,87 @@
               <tr>
                 <td>{{ item.name }}</td>
                 <td class="text-center"> <v-icon @click="onExpand(item)"> {{
-                  isExpanded(item)
-                                    ?'mdi-arrow-up-drop-circle': 'mdi-arrow-down-drop-circle'
+                  isExpanded(item) ?'mdi-arrow-up-drop-circle': 'mdi-arrow-down-drop-circle'
                 }}</v-icon> </td>
               </tr>
-              <tr v-if="isExpanded(item)">
-                <td :colspan="headers.length" class="py-4">
-                  <v-card elevation="0" :title="item.name" prepend-icon="mdi-briefcase"
-                    subtitle="Required Competencies">
-                    <v-card-text>
-                      <v-list lines="one" density="compact" item-value="id" :items="item.skills" item-title="name">
-                        <template #item="{ title, value }">
-                          <v-list-item class="mb-2">
-                            <v-card variant="tonal" color="primary" class="pb-2">
-                              <v-card-text> {{ title }} </v-card-text>
-                            </v-card>
-                          </v-list-item>
-                        </template>
-                      </v-list>
-                    </v-card-text>
+              <v-slide-y-transition>
+                <tr v-if="item.expanded">
+                  <td :colspan="headers.length" class="py-4">
+                    <v-card elevation="0">
+                      <v-card-item class="px-8">
+                        <v-row align="center">
+                          <v-col cols="1" class="text-center">
+                            <v-icon>mdi-briefcase</v-icon>
+                          </v-col>
+                          <v-col cols="7">
+                            <v-card-item>
+                              <v-card-title>
+                                {{ item.name }}
+                              </v-card-title>
+                              <v-card-subtitle> Required Competencies </v-card-subtitle>
+                            </v-card-item>
+                          </v-col>
+                          <v-col cols="2">
+                            <v-select class="w-100" :items="positions"
+                                  v-model="item.next_position" label="Position"
+                                  density="comfortable"></v-select>
+                          </v-col>
+                          <v-col cols="2" class="text-right">
+
+                            <v-menu  v-model="editJob" :close-on-content-click="false" location="end">
+                              <template v-slot:activator="{ props }">
+                                <v-btn size="small" class="w-75" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
+                                  variant="flat">Add</v-btn>
+                              </template>
+
+                              <v-card min-width="300" max-width="600" title="Edit Job Title" class="pa-4">
+                                <v-card-text>
+                                  <v-textarea v-model="item.name" label="Job Name" density="compact"></v-textarea>
+
+                                  <v-select label="Select Hard Skills" return-object v-model="item.competencies['hard']" :items="competencies['hard']" item-value="id"
+                                    item-title="name" chips multiple :value-comparator="compare"></v-select>
+                                  <v-select label="Select Soft Skills" return-object v-model="item.competencies['soft']" :items="competencies['soft']" item-value="id"
+                                    item-title="name" chips multiple :value-comparator="compare"></v-select>
+                                  <v-select label="Select DOA Skills" return-object v-model="item.competencies['doa']" :items="competencies['doa']" item-value="id"
+                                    item-title="name" chips multiple :value-comparator="compare"></v-select>
+
+                                </v-card-text>
+                                <v-card-actions>  
+                                  <v-btn color="error" variant="flat" :rounded="false" @click="onDelete(item.id)">
+                                    Delete
+                                  </v-btn>
+                                  <v-spacer></v-spacer>
+
+                                  <v-btn variant="text" color="gray-lighten-2" @click="editJob = false">
+                                    Cancel
+                                  </v-btn>
+                                  <v-btn color="primary" variant="flat" :rounded="false" @click="onSave(item)">
+                                    Save
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card>
+                            </v-menu>
 
 
-                  </v-card>
+                          </v-col>
+                        </v-row>
+                      </v-card-item>
 
-                </td>
-              </tr>
+
+                      <v-card-text>
+                        <competency-list :items="item.competencies['hard']" header="Hard Skills"></competency-list>
+                        <competency-list :items="item.competencies['soft']" header="Soft Skills"></competency-list>
+                        <competency-list :items="item.competencies['doa']" header="DOA Skills"></competency-list>
+
+                        
+                      </v-card-text>
+
+
+                    </v-card>
+
+                  </td>
+                </tr>
+              </v-slide-y-transition>
             </template>
           </tbody>
         </v-table>
@@ -64,34 +162,53 @@ const pagination = ref({
 })
 
 
-const items = ref([])
-
-const expanded = ref([])
-const isExpanded = (item) => expanded.value.includes(item)
-
-const onExpand = (item) => {
-  const index = expanded.value.findIndex(exp => exp.id == item.id)
-
-  if (index < 0) {
-    expanded.value.push(item)
-  } else {
-    expanded.value.splice(index, 1)
-  }
-}
-
 const loading = ref(true)
 
-const getJobs = async (page=1) => {
+const addJob = ref(false)
+
+const editJob = ref(false)
+
+const addCompetencies = (event, item) => {
+  item.skills.push(event)
+}
+
+const positions = [
+  { title: "Junior", value: 'junior' },
+  { title: "Medior", value: 'medior' },
+  { title: "Senior", value: 'senior' },
+]
+
+const compare = (a, b) => {
+  return a.id === b.id
+}
+
+
+const findIndex = (id) => items.value.findIndex((item) => item.id === id)
+
+const addModel = reactive({
+  name: ''
+})
+
+const onSave = async (item) => {
+  loading.value = true
+
   try {
-    const { data: job } = await axios.get(`/api/job-title?page=${page}`)
+    if (item && item.edit) {
+      const {jobTitle} = await axios.put(`/api/job-title/${item.id}`, item)
 
-    items.value = job.data
+      const index = findIndex(item.id)
 
-    nextTick(()=>{
-      pagination.value.page = job.current_page
-      pagination.value.lastPage = job.last_page
-    })
-    
+      items.value.splice(index, 1, jobTitle)
+      
+      editJob.value = false
+    } else {
+      const { data: competency } = await axios.post(`/api/job-title`, addModel)
+
+      items.value.push(competency)
+
+      addJob.value = false
+    }
+
   } catch (error) {
     console.log(error);
   } finally {
@@ -99,8 +216,105 @@ const getJobs = async (page=1) => {
   }
 }
 
-onMounted(()=>{
+
+const onDelete = async (id) => {
+  loading.value = true
+
+  try {
+    await axios.delete(`/api/job-title/${id}`)
+
+    const index = findIndex(id)
+
+    console.log(index);
+
+    items.value.splice(index, 1)
+
+
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+
+const items = ref([])
+
+const expanded = ref([])
+
+const isExpanded = (item) => expanded.value.includes(item)
+
+const onExpand = async (item) => {
+  const index = expanded.value.findIndex(exp => exp.id == item.id)
+
+  if (index < 0) {
+    const competencies = await showCompetencies(item)
+
+    item.competencies = competencies
+
+    item.next_position = null
+    
+    expanded.value.push(item)
+
+    nextTick(() => {
+      item.edit = true
+      item.expanded = true
+    })
+    
+  } else {
+    expanded.value.splice(index, 1)
+  }
+}
+
+const competencies = ref([])
+
+const getCompetencies = async () => {
+  try {
+
+    const { data: competency } = await axios.get('/api/competencies/types')
+    competencies.value = competency
+
+  } catch (error) {
+
+  }
+}
+
+const showCompetencies = async (item) => {
+  try { 
+    const { data } = await axios.get(`/api/job-title/${item.id}`)
+
+    return  data.competencies
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const getJobs = async (page = 1) => {
+  try {
+    const { data: job } = await axios.get(`/api/job-title?page=${page}`)
+
+    items.value = job.data
+
+    nextTick(() => {
+      pagination.value.page = job.current_page
+      pagination.value.lastPage = job.last_page
+    })
+
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(async() => {
   getJobs()
+
+  if (competencies.value.length === 0) await getCompetencies()
+
+  console.log(competencies);
+
 })
 </script>
 
