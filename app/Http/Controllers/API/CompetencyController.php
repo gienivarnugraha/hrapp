@@ -27,7 +27,8 @@ class CompetencyController extends Controller
      */
     public function groupByType()
     {
-        return response()->json(Competency::all()->groupBy('type')->all());
+        $types = Competency::all()->groupBy('type')->all();
+        return response()->json($types);
     }
 
     /**

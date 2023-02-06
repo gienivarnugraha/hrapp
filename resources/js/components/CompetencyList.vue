@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-list-subheader>{{ header }}</v-list-subheader>
-    <v-list v-if="items" :lines="lines" density="compact" :item-value="itemValue" :items="items"
+    <v-list v-if="items.length > 0" :lines="lines" density="compact" :item-value="itemValue" :items="items"
       :item-title="itemTitle">
       <template #item="{ title, value }">
         <v-list-item class="mb-2">

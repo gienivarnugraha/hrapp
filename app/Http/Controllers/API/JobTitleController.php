@@ -24,7 +24,7 @@ class JobTitleController extends Controller
         return response()->json($jobs);
     }
 
-      /**
+    /**
      * Display the specified resource.
      *
      * @param  \App\Models\JobTitle  $jobTitle
@@ -32,11 +32,17 @@ class JobTitleController extends Controller
      */
     public function show(JobTitle $jobTitle)
     {
+        $skills = [
+            'junior' => $jobTitle->showSkills($jobTitle, 'junior'),
+            'medior' => $jobTitle->showSkills($jobTitle, 'medior'),
+            'senior' => $jobTitle->showSkills($jobTitle, 'senior'),
+        ];
+        // jobTitle->competencies->groupBy(['pivot.position', 'type'])->all()
+
         return response()->json([
-            'competencies' => $jobTitle->competencies->groupBy('type')->all(),
+            'competencies' => $skills,
         ]);
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -50,7 +56,7 @@ class JobTitleController extends Controller
 
         return response()->json($job);
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
@@ -60,15 +66,32 @@ class JobTitleController extends Controller
      */
     public function update(Request $request, JobTitle $jobTitle)
     {
-        $jobTitle->update($request->only(['name','competencies'])); 
+        $jobTitle->update($request->only(['name', 'competencies', 'position']));
 
-        if($request->competencies){
-            $competencies = collect($request->competencies)->reduce(function($prev, $next){
-                $nx = collect($next)->pluck('id')->all();
-                return array_merge($prev, $nx);
-            },[]);
-            $jobTitle->competencies()->sync($competencies);
+        if ($request->competencies) {
+            $jobTitle->competencies()->detach();
+
+            collect($request->competencies)->map(function ($value, $index) use ($jobTitle, $request) {
+                $competenciesId = collect($request->competencies[$index])->reduce(function ($prev, $next) {
+                    $nx = collect($next)->pluck('id')->all();
+                    $prev[] = $nx;
+                    return $prev;
+                }, []);
+
+                $flatten = Arr::flatten($competenciesId);
+
+                $sync = array_fill_keys($flatten, ['position' => $index]);
+
+                $jobTitle->competencies()->attach($sync);
+            });
+
         }
+
+        $jobTitle['skills'] = [
+            'junior' => $jobTitle->showSkills($jobTitle, 'junior'),
+            'medior' => $jobTitle->showSkills($jobTitle, 'medior'),
+            'senior' => $jobTitle->showSkills($jobTitle, 'senior'),
+        ];
 
         return response()->json($jobTitle);
     }
@@ -83,6 +106,6 @@ class JobTitleController extends Controller
     {
         $jobTitle->delete();
 
-        return response()->json([ 'status' => 'success' ]);
+        return response()->json(['status' => 'success']);
     }
 }

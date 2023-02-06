@@ -17,7 +17,20 @@ class JobTitle extends Model
     public function peoples(){
         return $this->hasMany(People::class);
     }
+    
     public function competencies(){
         return $this->belongsToMany(Competency::class)->withPivot('position');
     }
+
+    
+    public function showSkills($jobTitle, $position)
+    {
+        $skill = $jobTitle->competencies->where('pivot.position', $position)->groupBy('type')->all();
+
+        $defaultSkill = ['hard' => isset($skill['hard']) ? $skill['hard'] : [] , 'soft' => isset($skill['soft']) ? $skill['soft'] : [] , 'doa' => isset($skill['doa']) ? $skill['doa'] : [] ];
+
+        return $defaultSkill;
+    }
+
+
 }
