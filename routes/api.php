@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\EventController;
@@ -28,12 +27,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('job-title/all', [JobTitleController::class, 'getAll']);
+    Route::get('competencies/types', [CompetencyController::class, 'groupByType']);
+    Route::post('events/generate', [EventController::class,'generate']);
+    Route::post('logout', [AuthController::class,'logout']);	
+
     Route::apiResource('job-title', JobTitleController::class);
     Route::apiResource('competencies', CompetencyController::class)->except('show');
     Route::apiResource('peoples', PeopleController::class);
     Route::apiResource('events', EventController::class);
-    Route::get('competencies/types', [CompetencyController::class, 'groupByType']);
-    Route::post('events/generate', [EventController::class,'generate']);
-    Route::post('logout', [AuthController::class,'logout']);	
 });
 

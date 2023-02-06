@@ -164,9 +164,7 @@ const positions = [
   { title: "Senior", value: 'senior' },
 ]
 
-const compare = (a, b) => {
-  return a.id === b.id
-}
+const compare = (a, b) =>  a.id === b.id
 
 const findIndex = (id) => items.value.findIndex((item) => item.id === id)
 

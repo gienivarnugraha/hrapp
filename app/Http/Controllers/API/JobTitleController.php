@@ -33,9 +33,9 @@ class JobTitleController extends Controller
     public function show(JobTitle $jobTitle)
     {
         $skills = [
-            'junior' => $jobTitle->showSkills($jobTitle, 'junior'),
-            'medior' => $jobTitle->showSkills($jobTitle, 'medior'),
-            'senior' => $jobTitle->showSkills($jobTitle, 'senior'),
+            'junior' => $jobTitle->showSkills('junior'),
+            'medior' => $jobTitle->showSkills('medior'),
+            'senior' => $jobTitle->showSkills('senior'),
         ];
         // jobTitle->competencies->groupBy(['pivot.position', 'type'])->all()
 
@@ -108,4 +108,12 @@ class JobTitleController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    
+    public function getAll(){
+        $jobs = JobTitle::select(['id','name'])->get();
+
+        return response()->json($jobs);
+    }
+
 }

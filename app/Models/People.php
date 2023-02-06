@@ -5,15 +5,18 @@ namespace App\Models;
 use App\Models\Event;
 use App\Models\JobTitle;
 use App\Models\Competency;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class People extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'peoples';
+
+    protected $fillable = ['name', 'nik', 'org', 'position', 'job_title_id'];
 
     public function competencies()
     {
@@ -27,6 +30,15 @@ class People extends Model
 
     public function jobTitle()
     {
-        return $this->belongsTo(JobTitle::class);
+        return $this->belongsTo(JobTitle::class)->withTrashed()->select(['name', 'id']);
+    }
+
+    public function showSkills()
+    {
+        $skills = $this->competencies->groupBy('type')->all();
+
+        $defaultSkill = ['hard' => isset($skills['hard']) ? $skills['hard'] : [], 'soft' => isset($skills['soft']) ? $skills['soft'] : [], 'doa' => isset($skill['doa']) ? $skill['doa'] : []];
+
+        return $defaultSkill;
     }
 }

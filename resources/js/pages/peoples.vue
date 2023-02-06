@@ -11,7 +11,49 @@
 
           </v-col>
           <v-col cols="2" class="text-right">
-            <v-btn size="small" class="w-75" :rounded="false" prepend-icon="mdi-plus" variant="flat">Add</v-btn>
+            <v-menu v-model="addMenu" :close-on-content-click="false" location="end">
+              <template v-slot:activator="{ props }">
+
+                <v-btn size="small" class="w-100" :rounded="false" prepend-icon="mdi-plus" variant="flat"
+                  v-bind="props">Add People</v-btn>
+              </template>
+
+              <v-card class="pa-4" min-width="300" title="Add People" :disabled="addModel.loading"
+                :loading="addModel.loading">
+                <v-card-text>
+
+                  <v-text-field v-model="addModel.name" label="Name"> </v-text-field>
+
+                  <v-text-field v-model="addModel.nik" label="NIK"> </v-text-field>
+
+                  <v-text-field v-model="addModel.org" label="Organization Code"> </v-text-field>
+
+                  <v-autocomplete label="Position" v-model="addModel.position" :items="positions"></v-autocomplete>
+
+                  <v-autocomplete label="Job Title" v-model="addModel.job_title_id" :items="jobTitles"  item-value="id" item-title="name"></v-autocomplete>
+
+                  <v-card-subtitle>Skills:</v-card-subtitle>
+
+                  <v-autocomplete label="Select Hard Skills" v-model="addModel.skills['hard']"
+                    :items="competencies['hard']" item-value="id" item-title="name" chips multiple></v-autocomplete>
+                  <v-autocomplete label="Select Soft Skills" v-model="addModel.skills['soft']"
+                    :items="competencies['soft']" item-value="id" item-title="name" chips multiple></v-autocomplete>
+                  <v-autocomplete label="Select DOA Skills" v-model="addModel.skills['doa']"
+                    :items="competencies['doa']" item-value="id" item-title="name" chips multiple></v-autocomplete>
+
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn variant="text" color="error" @click="addMenu = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="primary" variant="flat" @click="onSave(addModel)">
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-menu>
           </v-col>
         </v-row>
       </v-card-title>
@@ -39,12 +81,12 @@
                     : 'mdi-menu-down'"></v-btn> </td>
               </tr>
               <v-slide-y-transition>
-                <tr v-if="item.expanded && !item.loadCompetencies">
+                <tr v-if="item.expanded">
                   <td :colspan="headers.length" class="py-4">
-                    <v-card variant="outlined" color="indigo">
+                    <v-card variant="outlined" color="indigo" class="pa-4">
                       <v-card-title class="px-8 my-4">
                         <v-row align="center">
-                          <v-col cols="10">
+                          <v-col cols="8">
                             <v-icon class="mr-4">
                               mdi-account
                             </v-icon>
@@ -53,8 +95,47 @@
 
                           </v-col>
                           <v-col cols="2" class="text-right">
+                            <v-menu :key="item.id" v-model="item.edit" :close-on-content-click="false" location="end">
+                              <template v-slot:activator="{ props }">
+
+                                <v-btn size="small" :key="item.id" class="w-100" :rounded="false"
+                                  prepend-icon="mdi-plus" variant="flat" v-bind="props">Add Skill</v-btn>
+                              </template>
+
+                              <v-card class="pa-4" min-width="300" :title="`Add Skills to ${item.name}`"
+                                :disabled="item.loadCompetencies" :loading="item.loadCompetencies">
+                                <v-card-text>
+
+                                  <v-select label="Position" v-model="item.position" :items="positions"></v-select>
+
+                                  <v-select label="Select Hard Skills" return-object v-model="item.skills['hard']"
+                                    :items="competencies['hard']" item-value="id" item-title="name" chips multiple
+                                    :value-comparator="compare"></v-select>
+                                  <v-select label="Select Soft Skills" return-object v-model="item.skills['soft']"
+                                    :items="competencies['soft']" item-value="id" item-title="name" chips multiple
+                                    :value-comparator="compare"></v-select>
+                                  <v-select label="Select DOA Skills" return-object v-model="item.skills['doa']"
+                                    :items="competencies['doa']" item-value="id" item-title="name" chips multiple
+                                    :value-comparator="compare"></v-select>
+
+                                </v-card-text>
+                                <v-card-actions>
+                                  <v-spacer></v-spacer>
+
+                                  <v-btn variant="text" color="error" @click="item.edit = false">
+                                    Cancel
+                                  </v-btn>
+                                  <v-btn color="primary" variant="flat" @click="onSave(item)">
+                                    Save
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card>
+                            </v-menu>
+
+                          </v-col>
+                          <v-col cols="2" class="text-right">
                             <v-btn size="small" class="w-100" color="error" :rounded="false" prepend-icon="mdi-delete"
-                              variant="flat">delete</v-btn>
+                              variant="flat" @click="onDelete(item.id)">delete</v-btn>
                           </v-col>
                         </v-row>
                       </v-card-title>
@@ -80,9 +161,8 @@
 
                             <v-row class=" px-4">
                               <v-col :cols="item.next_position ? 6 : 12">
-                                <v-select class="w-100" :items="positions"
-                                  v-model="item.next_position" label="Promote to"
-                                  density="comfortable"></v-select>
+                                <v-select class="w-100" :items="positions" v-model="item.next_position"
+                                  label="Promote to" density="comfortable"></v-select>
 
                               </v-col>
                               <v-col cols="6" v-if="item.next_position">
@@ -95,9 +175,12 @@
 
                             <v-slide-y-transition>
                               <div v-if="item.next_position">
-                                <competency-list :items="item.required_skills[item.next_position]['hard']" header="Hard Skills"></competency-list>
-                                <competency-list :items="item.required_skills[item.next_position]['soft']" header="Soft Skills"></competency-list>
-                                <competency-list :items="item.required_skills[item.next_position]['doa']" header="DOA Skills"></competency-list>
+                                <competency-list :items="item.required_skills[item.next_position]['hard']"
+                                  :compare="item.skills['hard']" header="Hard Skills"></competency-list>
+                                <competency-list :items="item.required_skills[item.next_position]['soft']"
+                                  :compare="item.skills['soft']" header="Soft Skills"></competency-list>
+                                <competency-list :items="item.required_skills[item.next_position]['doa']"
+                                  :compare="item.skills['doa']" header="DOA Skills"></competency-list>
 
                               </div>
                             </v-slide-y-transition>
@@ -142,18 +225,39 @@ const positions = [
   { title: "Senior", value: 'senior' },
 ]
 
-const pagination = ref({
+let pagination = ref({
   page: 1,
   totalPage: 1,
 })
 
-const items = ref([])
+let items = ref([])
 
-const expanded = ref([])
+let competencies = ref([])
+
+let jobTitles = ref([])
+
+let expanded = ref([])
+
+let loading = ref(true)
+
+let addMenu = ref(false)
+
+let addModel = ref({
+  name: '',
+  nik: '',
+  org: '',
+  job_title_id: null,
+  position: null,
+  loading: false,
+  skills: { hard: [], soft: [], doa: [] },
+
+})
+
+const compare = (a, b) => a.id === b.id
 
 const findIndex = (item) => expanded.value.findIndex(exp => exp.id == item.id)
 
-const getCompetencies = async (item) => {
+const showCompetencies = async (item) => {
   try {
     const { data: people } = await axios.get(`/api/peoples/${item.id}`)
 
@@ -163,12 +267,14 @@ const getCompetencies = async (item) => {
 
     item.next_position = ''
 
-    item['expanded'] = true
+    item.expanded = true
+
+    item.edit = false
 
     return item
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
 
   }
@@ -181,12 +287,12 @@ const onExpand = async (item) => {
     try {
       item.loadCompetencies = true
 
-      const people = await getCompetencies(item)
+      const people = await showCompetencies(item)
 
       expanded.value.push(people)
 
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       item.loadCompetencies = false
     }
@@ -196,7 +302,6 @@ const onExpand = async (item) => {
       expanded.value.splice(index, 1)
       item.expanded = false
     })
-
   }
 }
 
@@ -209,24 +314,26 @@ const generateSchedule = async (people) => {
 
     let findPeople = expanded.value.find(ppl => ppl.id === people.id)
 
+    console.log(findPeople);
+
     events.forEach(event => {
-      let key = Object.keys(event)[0]
+      let compId = Object.keys(event)[0];
 
-      let competency = findPeople.required_skills[people.next_position].find(comp => comp.id === key)
+      ['hard','soft','doa'].forEach((type)=> {
+        let competency = findPeople.required_skills[people.next_position][type].find(comp => comp.id === parseInt(compId))
 
-      competency['start_date'] = moment(event[key]).format('YYYY-MM-DD HH:mm')
-
+        if(competency) {
+          competency['start_date'] = moment(event[compId]).format('YYYY-MM-DD HH:mm')
+          console.log(competency);
+        }
+      })
     })
 
-
-
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 
 };
-
-const loading = ref(true)
 
 const getPeoples = async (page = 1) => {
   loading.value = true
@@ -240,15 +347,85 @@ const getPeoples = async (page = 1) => {
     pagination.value.totalPage = peoples.total_page
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     nextTick(() => loading.value = false
     )
   }
 }
 
-onMounted(() => {
-  getPeoples()
+const getCompetencies = async () => {
+  try {
+    const { data: competency } = await axios.get('/api/competencies/types')
+    competencies.value = competency
+  } catch (error) {
+    console.error(error);
+  }
+}
+const getJobs = async () => {
+  try {
+    const { data: jobs } = await axios.get('/api/job-title/all')
+    jobTitles.value = jobs[0]
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+const onSave = async (item) => {
+  item.loadCompetencies = true
+
+  try {
+    if (item && item.edit) {
+      const { data: people } = await axios.put(`/api/peoples/${item.id}`, item)
+
+      const index = findIndex(item.id)
+
+      people['expanded'] = false
+
+      people['edit'] = false
+
+      items.value.splice(index, 1, people)
+
+    } else {
+      const { data: people } = await axios.post(`/api/peoples`, addModel.value)
+
+      items.value.push(people)
+
+      addMenu.value = false
+    }
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    item.loadCompetencies = false;
+  }
+}
+
+const onDelete = async (id) => {
+  loading.value = true
+
+  try {
+    await axios.delete(`/api/peoples/${id}`)
+
+    const expIndex = findIndex(id)
+    const index = items.value.findIndex(item => item.id == id)
+
+    expanded.value.splice(expIndex, 1)
+    items.value.splice(index, 1)
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(async() => {
+  await getPeoples()
+  await getCompetencies()
+  await getJobs()
+
 })
 </script>
 

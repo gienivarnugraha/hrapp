@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Event;
 use App\Models\People;
 use App\Models\Competency;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class JobTitle extends Model
 {
@@ -23,11 +25,24 @@ class JobTitle extends Model
     }
 
     
-    public function showSkills($jobTitle, $position)
+    public function showSkills($position=null)
     {
-        $skill = $jobTitle->competencies->where('pivot.position', $position)->groupBy('type')->all();
+        $skills = $this->competencies->where('pivot.position', $position)->groupBy('type')->all();
 
-        $defaultSkill = ['hard' => isset($skill['hard']) ? $skill['hard'] : [] , 'soft' => isset($skill['soft']) ? $skill['soft'] : [] , 'doa' => isset($skill['doa']) ? $skill['doa'] : [] ];
+        collect($skills)->map(function ($skill) {
+            return $skill->map(function ($competency) {
+                $event = Event::where('competency_id', $competency->id)->first();
+
+                if ($event) {
+                    $startDate = Carbon::parse($event->fullStartDate)->format('Y-m-d H:i');
+                    $competency['start_date'] = $startDate;
+                }
+
+                return $competency;
+            });
+        });
+
+        $defaultSkill = ['hard' => isset($skills['hard']) ? $skills['hard'] : [] , 'soft' => isset($skills['soft']) ? $skills['soft'] : [] , 'doa' => isset($skills['doa']) ? $skills['doa'] : [] ];
 
         return $defaultSkill;
     }

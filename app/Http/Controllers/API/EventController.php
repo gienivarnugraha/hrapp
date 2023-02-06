@@ -120,7 +120,7 @@ class EventController extends Controller
       } 
 
       $schedule->push([
-        "competency-{$requiredCompetencyId}" => $event->fullStartDate
+        $requiredCompetencyId => $event->fullStartDate
       ]);
 
     });

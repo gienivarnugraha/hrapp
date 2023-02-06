@@ -1,138 +1,38 @@
-1,On the Job Training
-2,General Administrator
-3,Secretary
-4,Flight Test Engineer
-5,Flight Test Mechanic
-6,Test Pilot
-7,AEI Assembler
-8,AEI Installer
-9,Mechanical Assembler
-10,Mechanical Installer
-11,Business Development
-12,Business Plan & Feasibility
-13,Bonding & Composite Operator
-14,CNC Machine Operator
-15,Conventional Machine Operator
-16,Electro Plating Operator
-17,Financial Evaluator
-18,A/C Configuration Design
-19,Aerodynamic
-20,Aerodynamic Tools & Method Development
-21,Configuration Aerodynamics
-22,Engineering Computation & Data Base
-23,Flight Dynamic and Control
-24,Flight Performance
-25,Flight Physics Test
-26,Wind Tunnel Model Design & Manufacturing
-27,Wind Tunnel Test
-28,Fatigue & Damage Tolerance
-29,Interior Architecture Designer
-30,Payload Design
-31,Stress Analysis
-32,Structural Design
-33,Structural Dynamic Response
-34,Structural Dynamic Stability
-35,Structural Dynamic Vibration & Control Test
-36,Structural Dynamics
-37,Structural Fatigue Test Engineering
-38,Structural Fatigue Test Equipment & Control System
-39,Structural Load & Analysis
-40,Structural Static Test
-41,Structural Static Test Design & Installation
-42,Structural Static Test Engineering
-43,Structural Static Test Equipment & Operation
-44,Weight & Balance Analysis
-45,A/C System Engineering
-46,Acoustics
-47,Aircraft Systems Engineering
-48,Avionic System Test
-49,Communication, Navigation & Guidance
-50,Design Integration
-51,Electrical
-52,Electrical Avionics Integration Design
-53,Electrical Power System
-54,Electrical Sub-Systems
-55,Electrical System Test
-56,Electro Hydro Mechanical System test
-57,Electromagnetic
-58,Environment System Test
-59,Environmental Control Systems
-60,Environmental Protection System
-61,Flight Control System
-62,Flight Deck Design
-63,Flight Deck Integration
-64,Hydraulics System
-65,Instrument & Display
-66,Landing Gear Systems
-67,Mechanical Design
-68,Propulsion
-69,Propulsion Design
-70,Propulsion Performance
-71,Propulsion System
-72,Propulsion Test
-73,Real Time Systems Software
-74,Reliability & Safety
-75,Sensor & Signal Processing
-76,Askadep Pengembangan Bisnis & Pemasaran Produk
-77,Askadep Pengembangan EWP & IDKLO
-78,Askadep Pengembangan Produk Khusus
-79,Askadep Pengembangan Produk Strategis & Integrasi
-80,Chief Test Pilot
-81,Head of Independent Monitoring Function
-82,Environmental Engineer
-83,Industrial Hygienist
-84,Loss Control Spesialist
-85,Safety Engineer
-86,Material Planner
-87,Store & Inventory
-88,Ergonomic Design
-89,Flight Simulation Engineering
-90,Supervisor Rekayasa Produksi
-91,Composite & Chemical Technology
-92,Composite Manufacturing Engineering
-93,Laboratory Testing
-94,Machinery Facility Engineering
-95,Machining Manufacturing Engineering
-96,Material Management
-97,Metals Technology
-98,Method Engineering
-99,Production Assy & Integration Engineering
-100,Production Test Engineering
-101,Quality Process Engineering
-102,Quality Procurement Engineering
-103,Quality Product Engineering
-104,Test Facility & Instrumentation
-105,Tooling Design
-106,Engineering Document Controller
-107,Production Controller
-108,Assembly Inspector
-109,Flight Line Inspector
-110,Machining Inspector
-111,Quality General Technician
-112,Quality Laboratory Technical Support
-113,Surface Treatment Inspector
-114,A / C Certification & Continued Airworthiness
-115,Aircraft Manual
-116,Aviation Safety
-117,Business Application Software Engineering
-118,Business Process Engineering
-119,CAD/CAM Application Software Engineering
-120,Certification Systems & Documentation
-121,Computer Operation Maintenance
-122,Configuration Management
-123,Data Link & Communication System Engineering
-124,Engineering Standard & Document
-125,Flight Test data Process Engineering
-126,Flight Test Operation Engineering
-127,Flight Test Safety Operation
-128,Flight Test Telemetry & Telecommunication Engineering
-129,Instrumentation & Cont. Engineering
-130,Logistic Test Operation Engineering
-131,Maintenance Management
-132,Project Management
-133,Reliability & Maintain. Ability Engineering
-134,Sensory & Data Acquisition Engineering
-135,Test Article Instalation System Engineering
-136,Test Instrumentation Design Engineering
-137,Test Measurement & Callibration Engineering
-138,Test Vehicle System Engineering
+1,Flight Test Engineer
+2,Flight Test Mechanic
+3,Test Pilot
+4,AEI Assembler
+5,AEI Installer
+6,Aerodynamic
+7,Flight Dynamic and Control
+8,Flight Performance
+9,Flight Physics Test
+10,Stress Analysis
+11,Structural Design
+12,Structural Dynamic Response
+13,Structural Dynamic Stability
+14,Structural Dynamic Vibration & Control Test
+15,Structural Dynamics
+16,Structural Fatigue Test Engineering
+17,Structural Fatigue Test Equipment & Control System
+18,Structural Load & Analysis
+19,Structural Static Test
+20,Structural Static Test Design & Installation
+21,Structural Static Test Engineering
+22,Structural Static Test Equipment & Operation
+23,Avionic System Test
+24,Communication
+25,Design Integration
+26,Electrical
+27,Electrical Avionics Integration Design
+28,Electrical Power System
+29,Electrical Sub-Systems
+30,Electrical System Test
+31,Flight Control System
+32,Mechanical Design
+33,Flight Simulation Engineering
+34,Flight Test data Process Engineering
+35,Flight Test Operation Engineering
+36,Flight Test Safety Operation
+37,Flight Test Telemetry & Telecommunication Engineering
+38,Instrumentation & Cont. Engineering
