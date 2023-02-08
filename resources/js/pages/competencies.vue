@@ -2,13 +2,15 @@
   <v-container fluid>
     <v-card class="pa-4" :loading="loading" :disabled="loading">
       <v-card-item class="px-8">
-        <v-row align="center">
-          <v-col cols="10">
+        <v-row align="center" no-gutters>
+          <v-col cols="1" class="text-right">  
+            <v-icon class="mr-4">
+              mdi-briefcase
+            </v-icon>
+          </v-col>
+          <v-col cols="9">
             <v-card-item>
               <v-card-title>
-                <v-icon class="mr-4">
-                  mdi-briefcase
-                </v-icon>
                 Competencies
               </v-card-title>
               <v-card-subtitle> Compentency Lists </v-card-subtitle>
@@ -25,8 +27,8 @@
 
               <v-card min-width="300" title="Add Competency">
                 <v-card-text>
-                  <v-textarea v-model="addModel.name" label="Competency Name"  density="compact"></v-textarea>
-                  <v-select :items="types" v-model="addModel.type" label="Competency Type"  density="compact"></v-select>
+                  <v-textarea v-model="addModel.name" label="Competency Name" density="compact"></v-textarea>
+                  <v-select :items="types" v-model="addModel.type" label="Competency Type" density="compact"></v-select>
 
                 </v-card-text>
                 <v-card-actions>
@@ -49,7 +51,8 @@
 
 
       <v-card-text>
-        <v-table fixed-header height="75vh">
+        <Loading v-if="loading"></Loading>
+        <v-table fixed-header height="75vh" v-else>
           <thead>
             <tr>
               <th v-for="header in headers" :key="header.title" :class="header.class">
@@ -58,22 +61,25 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in items" :key="item.id" >
+            <tr v-for="item in items" :key="item.id">
               <td>
-                <v-text-field v-if="item.edit"  class="w-100" v-model="item.name" density="compact"></v-text-field>
+                <v-text-field hide-details v-if="item.edit" class="w-100" v-model="item.name"
+                  density="compact"></v-text-field>
                 <span v-else> {{ item.name }} </span>
 
               </td>
               <td class="text-center">
-                <v-select v-if="item.edit"  class="w-75" :items="types" v-model="item.type" density="compact"></v-select>
-                <span v-else> {{ item.type }} </span>
+                <v-select hide-details v-if="item.edit" class="w-75" :items="types" v-model="item.type"
+                  density="compact"></v-select>
+                <span v-else> {{ item.type }} Skills </span>
               </td>
               <td class="text-center">
                 <v-btn v-if="item.edit" size="small" color="success" icon="mdi-check" variant="text"
                   @click="onSave(item)"></v-btn>
                 <v-btn v-else size="small" color="error" icon="mdi-delete" variant="text"
                   @click="onDelete(item.id)"></v-btn>
-                <v-btn size="small" color="info" :icon="item.edit ? 'mdi-close' : 'mdi-pencil'" variant="text" @click="updateItem(item)"></v-btn>
+                <v-btn size="small" color="info" :icon="item.edit ? 'mdi-close' : 'mdi-pencil'" variant="text"
+                  @click="updateItem(item)"></v-btn>
               </td>
             </tr>
           </tbody>
@@ -127,7 +133,7 @@ const onSave = async (item) => {
       competency.edit = false
 
     } else {
-      const { data: competency } = await axios.post(`/api/competencies`,  addModel)
+      const { data: competency } = await axios.post(`/api/competencies`, addModel)
       console.log(competency);
       items.value.push(competency)
       add.value = false

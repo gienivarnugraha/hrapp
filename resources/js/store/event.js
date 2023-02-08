@@ -13,9 +13,12 @@ export const useEventStore = defineStore('events', {
       event_id: null,
       is_repeated: false,
       rrule: null,
+      competency_id: null,
     },
+    isEditing:false,
     rrule: {},
-    isEditing: false,
+    calendarApi: null,
+
     eventModal: false,
   }),
   getters: {
@@ -35,35 +38,44 @@ export const useEventStore = defineStore('events', {
       }
     },
     async saveEvent(payload) {
-      const {  event_id, ...rest } = payload
+      const { event_id, ...rest } = payload
+      this.model.loading = true
 
       try {
         let response
         if (event_id && this.isEditing) {
-          response = await axios.put(`${url}/${event_id}`, {...rest });
+          response = await axios.put(`${url}/${event_id}`, { ...rest });
         } else {
           response = await axios.post(`${url}`, rest);
         }
 
         this.isEditing = false;
 
+        this.calendarApi.refetchEvents()
+
         return response.data
       } catch (error) {
         console.error(error);
+      } finally {
+        this.model.loading = false
       }
     },
-    async deleteEvent(payload) {
-      const {event_id} = payload
-
+    async deleteEvent(id) {
+      this.model.loading = true
       try {
         this.isEditing = false;
 
-        const { data } = await axios.delete(`${url}/${event_id}`)
+        const { data } = await axios.delete(`${url}/${id}`)
+
+        this.calendarApi.refetchEvents()
+
 
         return data
 
       } catch (error) {
         console.error(error);
+      } finally {
+        this.model.loading = false
       }
     }
   }

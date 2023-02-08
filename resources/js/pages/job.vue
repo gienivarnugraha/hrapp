@@ -3,7 +3,7 @@
     <v-card class="pa-4" :loading="loading" :disabled="loading">
       <v-card-item class="px-8">
         <v-row align="center">
-          <v-col cols="1" class="text-center">
+          <v-col cols="1" class="text-right">
             <v-icon>mdi-briefcase</v-icon>
           </v-col>
           <v-col cols="9">
@@ -44,7 +44,8 @@
       </v-card-item>
 
       <v-card-text>
-        <v-table fixed-header height="75vh">
+        <Loading v-if="loading"></Loading>
+        <v-table fixed-header height="75vh" v-else>
           <thead>
             <tr>
               <th v-for="header in headers" :key="header.title" :class="header.class">
@@ -77,7 +78,7 @@
                           </v-col>
                           <v-col :cols="item.position ? 2 : 4">
                             <v-select class="w-100" :items="positions" v-model="item.position" label="Position"
-                              density="comfortable"></v-select>
+                              density="compact"  hide-details></v-select>
                           </v-col>
                           <v-col v-if="item.position" class="text-right">
                             <v-menu :key="item.id" v-model="item.edit" :close-on-content-click="false" location="end">
@@ -88,7 +89,7 @@
 
                               <v-card min-width="300" max-width="600" :title="`Edit Job Title for ${item.position} position `" class="pa-4" :disabled="loading">
                                 <v-card-text>
-                                  <v-textarea v-model="item.name" label="Job Name" density="compact"></v-textarea>
+                                  <v-text-field v-model="item.name" label="Job Name" hide-details></v-text-field>
 
                                   <v-select label="Select Hard Skills" return-object v-model="item.competencies[item.position]['hard']"
                                     :items="competencies['hard']" item-value="id" item-title="name" chips multiple
@@ -212,17 +213,13 @@ const getCompetencies = async () => {
 
 const showCompetencies = async (item) => {
   try {
-    loading.value = true
-    
     const { data } = await axios.get(`/api/job-title/${item.id}`)
     
     return data.competencies
     
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false
-  }
+  } 
 }
 
 const getJobs = async (page = 1) => {
@@ -244,7 +241,6 @@ const getJobs = async (page = 1) => {
 }
 
 const onSave = async (item) => {
-  loading.value = true
 
   try {
     if (item && item.edit) {
@@ -270,14 +266,10 @@ const onSave = async (item) => {
 
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
-  }
+  } 
 }
 
 const onDelete = async (id) => {
-  loading.value = true
-
   try {
     await axios.delete(`/api/job-title/${id}`)
 
@@ -289,9 +281,7 @@ const onDelete = async (id) => {
 
   } catch (error) {
     console.error(error);
-  } finally {
-    loading.value = false;
-  }
+  } 
 }
 
 onMounted(async () => {

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ($this->app->environment('production')) {
+        JsonResource::withoutWrapping();
+
+/*         if ($this->app->environment('production')) {
             URL::forceScheme('https');
-        }
+        } */
     }
 }

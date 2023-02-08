@@ -8,9 +8,12 @@ use App\Models\JobTitle;
 use App\Models\Competency;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use App\Exports\PeoplesExport;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\PeopleResource;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\PeopleCollection;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -25,8 +28,8 @@ class PeopleController extends Controller
     {
         $perpage = 25;
         $paginator = People::with('jobTitle')->orderBy('job_title_id')->simplePaginate($perpage)->toArray();
-        $paginator['total']= People::count();
-        $paginator['total_page']= ceil( People::count() / $perpage) ;
+        $paginator['total'] = People::count();
+        $paginator['total_page'] = ceil(People::count() / $perpage);
 
 
         return response()->json($paginator);
@@ -40,7 +43,7 @@ class PeopleController extends Controller
      */
     public function store(Request $request)
     {
-        $people =  People::create($request->only(['name','nik','org','position','job_title_id']));
+        $people =  People::create($request->only(['name', 'nik', 'org', 'position', 'job_title_id']));
 
         $people->job_title_id = $request->job_title_id;
 
@@ -68,7 +71,7 @@ class PeopleController extends Controller
             'medior' => $jobs->showSkills('medior'),
             'senior' => $jobs->showSkills('senior'),
         ];
-        
+
         return response()->json([
             'skills' =>  $people->showSkills(),
             'required_skills' => $requiredSkills,
@@ -83,22 +86,21 @@ class PeopleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, People $people)
-    { 
-        $people->update($request->only(['name','nik','org','position']));
+    {
+        $people->update($request->only(['name', 'nik', 'org', 'position']));
 
         if ($request->skills) {
             $forSync = collect($request->skills)->map(function ($value, $index) use ($people, $request) {
 
-                $sync= collect($request->skills[$index])->reduce(function ($prev, $next) {
+                $sync = collect($request->skills[$index])->reduce(function ($prev, $next) {
                     $prev[] = $next['id'];
                     return $prev;
                 }, []);
 
                 return $sync;
-
             });
 
-            $flatten = Arr::flatten($forSync,1);
+            $flatten = Arr::flatten($forSync, 1);
 
             $people->competencies()->sync($flatten);
         }
@@ -112,13 +114,12 @@ class PeopleController extends Controller
         ];
 
         $people['skills'] = $people->showSkills();
-        
+
         $people['job_title'] = $people->jobTitle;
 
         $people['required_skills'] = $requiredSkills;
 
         return response()->json($people);
-
     }
 
     /**
@@ -132,5 +133,14 @@ class PeopleController extends Controller
         $people->delete();
 
         return response()->json(['status' => 'success']);
+    }
+
+    public function export($id)
+    {
+        ob_end_clean(); // this
+        ob_start(); // and this
+
+        Excel::store(new PeoplesExport($id), 'export_store.xls','public');
+        return Excel::download(new PeoplesExport($id), 'export_download.xls',\Maatwebsite\Excel\Excel::XLS);
     }
 }

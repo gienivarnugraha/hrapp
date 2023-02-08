@@ -7,9 +7,14 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import rrulePlugin from "@fullcalendar/rrule";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 
+import download from '../composables/download'
+
+import { mergeProps } from "vue";
+
 import { RRule } from "rrule";
 
 import { useEventStore } from "../store/event";
+import axios from "axios";
 
 export default {
   components: {
@@ -18,20 +23,21 @@ export default {
   setup() {
     // Events
     const eventStore = useEventStore();
-    const { model: modelEvent, isEditing, eventModal } = storeToRefs(eventStore);
-    const { fetchEvents, saveEvent } = eventStore;
+    const { model: modelEvent, isEditing, eventModal, loading: eventLoading, calendarApi } = storeToRefs(eventStore);
+    const { fetchEvents, saveEvent, deleteEvent } = eventStore;
 
     const calendarRef = ref()
-    const calendarApi = ref()
 
     return {
       /* events */
       eventStore,
       eventModal,
+      eventLoading,
       isEditing,
       modelEvent,
       saveEvent,
       fetchEvents,
+      deleteEvent,
 
       /* Calendar */
       calendarRef,
@@ -43,6 +49,11 @@ export default {
       activeView: null,
       loading: true,
       title: "",
+      competencies: [],
+      jobTitles: [],
+      exportModal: false,
+      exportJobTitle: null,
+
 
       // TODO get from user props
       currentTimeFormat: "H:i",
@@ -60,9 +71,9 @@ export default {
         ],
         // headerToolbar: null,
         headerToolbar: {
-          left: 'prev,next today',
+          left: 'prev,next',
           center: 'title',
-          right: 'dayGridMonth'
+          right: 'today'
         },
 
         // TODO get from current user
@@ -153,7 +164,9 @@ export default {
     };
   },
   methods: {
+    mergeProps,
     onEventClick(event) {
+      console.log(event);
       let model = {};
 
       if (event.extendedProps.isRepeated) {
@@ -175,16 +188,19 @@ export default {
       Object.assign(model, {
         title: event.title,
         event_id: parseInt(event.id),
-        calendar_id: parseInt(event.extendedProps.calendar_id),
         description: event.extendedProps.description,
+        competency_id: event.extendedProps.competency_id,
+        peoples: event.extendedProps.peoples,
         is_all_day: event.allDay,
         is_repeated: event.extendedProps.isRepeated ?? false,
+        edit: false,
+        show: true,
+        loading: false,
       });
 
       this.eventStore.$patch((state) => {
         state.model = model;
-        state.isEditing = true;
-        state.eventModal = true;
+        state.isEditing = true
       });
     },
 
@@ -279,7 +295,6 @@ export default {
         event.setExtendedProp("isAllDay", false);
       }
       payload.event_id = dropInfo.event.id;
-      payload.calendar_id = dropInfo.event.extendedProps.calendar_id;
       payload.title = dropInfo.event.title;
 
       this.saveEvent(payload);
@@ -311,7 +326,6 @@ export default {
         };
       }
       payload.event_id = resizeInfo.event.id;
-      payload.calendar_id = resizeInfo.event.extendedProps.calendar_id;
       payload.title = resizeInfo.event.title;
 
       this.saveEvent(payload);
@@ -332,7 +346,6 @@ export default {
 
       const model = {
         // for default calendar selection
-        calendar_id: 1,
 
         is_repeated: false,
 
@@ -554,9 +567,34 @@ export default {
       this.calendarApi.today();
       this.title = this.calendarApi.view.title;
     },
+    async exportToExcel(id) {
+      try {
+        const response = await axios.get('api/peoples/export/'+id, { responseType: 'blob' })
+
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        const filename = new Date().toISOString() + '.xls'
+
+        link.setAttribute('download', filename) //or any other extension
+        document.body.appendChild(link)
+        link.click()
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
   },
   mounted() {
     this.setDefaultView();
+
+    axios.get('/api/competencies').then(({ data }) => {
+      this.competencies = data
+    })
+
+    axios.get('/api/job-title/all').then(({ data }) => {
+      this.jobTitles = data
+    })
 
     if (this.calendarRef) this.calendarApi = this.calendarRef.getApi();
   },
@@ -566,24 +604,171 @@ export default {
 <template>
   <v-container fluid>
     <v-card class="pa-4">
+      <v-btn @click="exportModal=true" prepend-icon="mdi-file-excel"> export </v-btn>
+
       <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-screen">
 
         <template #eventContent="arg">
-          <v-tooltip bottom color="teal">
-            <template v-slot:activator="{ props }">
-              <div style="min-height:20px;" v-bind="props">
-                {{ createEventTitleDomNodes(arg) }}
-              </div>
+          <v-menu :key="arg.event.id" :close-on-content-click="false" location="end">
+            <template v-slot:activator="{ props: menu }">
+              <v-tooltip bottom color="teal">
+                <template v-slot:activator="{ props: tooltip }">
+                  <div style="min-height:20px;" v-bind="mergeProps(menu, tooltip)"
+                    :id="`event-activator-${arg.event.id}`" @click="onEventClick(arg.event)">
+                    {{ createEventTitleDomNodes(arg) }}
+                  </div>
+                </template>
+                <div style="text-align:left;">
+                  Title: {{ arg.event.title }}<br />
+                  Description: {{ arg.event.extendedProps.description }}<br />
+                  Time: {{ arg.event.start }}<br />
+                </div>
+              </v-tooltip>
+
             </template>
-            <div style="text-align:left;">
-              Title: {{ arg.event.title }}<br />
-              Description: {{ arg.event.extendedProps.description }}<br />
-              Time: {{ arg.event.extendedProps.start }}<br />
-            </div>
-          </v-tooltip>
+            <v-card class="pa-4" width="480" :disabled="modelEvent.loading" :loading="modelEvent.loading">
+              <v-card-item>
+                <v-card-title> {{ modelEvent.title }} </v-card-title>
+                <v-card-subtitle> {{ modelEvent.start_date }} - {{ modelEvent.start_time }} </v-card-subtitle>
+              </v-card-item>
+
+
+              <v-card-text>
+                <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
+                <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
+                <v-checkbox label="All Day" v-model="modelEvent.is_all_day" color="primary"> </v-checkbox>
+                <v-row>
+                  <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                    <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
+                  </v-col>
+                  <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                    <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
+                      label="Start Time"></v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                    <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
+                  </v-col>
+                  <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                    <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
+                      label="End Time"></v-text-field>
+                  </v-col>
+                </v-row>
+
+              </v-card-text>
+
+
+              <v-card-text>
+                <v-list-subheader> Attendance Lists: </v-list-subheader>
+                <v-list lines="two" max-height="200">
+                  <v-list-item v-for="(people, index) in modelEvent.peoples" :key="people.id">
+                    <template v-slot:prepend>
+                      <v-avatar color="primary">
+                        <span class="text-h5">
+                          {{ index+ 1 }}
+
+                        </span>
+                      </v-avatar>
+                    </template>
+                    <v-list-item-title> {{ people.name }} </v-list-item-title>
+                    <v-list-item-subtitle> {{ people.nik }} / {{ people.org }} </v-list-item-subtitle>
+
+                  </v-list-item>
+                </v-list>
+
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn color="error" :rounded="false" :loading="modelEvent.loading" variant="text"
+                  @click="deleteEvent(arg.event.id)">
+                  Delete
+                </v-btn>
+                <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
+                  @click="saveEvent(modelEvent)">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+
+
+
 
         </template>
       </FullCalendar>
+
+
+      <v-dialog v-model="eventModal">
+        <v-card class="pa-4" width="480" :disabled="modelEvent.loading" :loading="modelEvent.loading">
+          <v-card-title>Add Event </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
+            <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
+            <v-select label="Competency" v-model="modelEvent.competency_id" :items="competencies" item-value="id"
+              item-title="name"> </v-select>
+            <v-checkbox label="All Day" v-model="modelEvent.is_all_day" color="primary"> </v-checkbox>
+            <v-row>
+              <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
+              </v-col>
+              <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
+                  label="Start Time"></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
+              </v-col>
+              <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
+                  label="End Time"></v-text-field>
+              </v-col>
+            </v-row>
+
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn color="error" :rounded="false" :loading="modelEvent.loading" variant="text"
+              @click="eventModal = false">
+              Cancel
+            </v-btn>
+            <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
+              @click="saveEvent(modelEvent)">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="exportModal">
+        <v-card class="pa-4" width="480" >
+          <v-card-title>Export per JobTitle </v-card-title>
+          <v-card-text>
+            <v-autocomplete :items="jobTitles" item-value="id" item-title="name" v-model="exportJobTitle" label="Export" placeholder="Job Title to Export"> </v-autocomplete>
+          
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn color="error" :rounded="false"  variant="text"
+              @click="exportModal = false">
+              Cancel
+            </v-btn>
+            <v-btn color="primary" :rounded="false" variant="flat"
+              @click="exportToExcel(exportJobTitle)">
+              Export
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </v-card>
   </v-container>
 

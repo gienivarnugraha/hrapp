@@ -9,6 +9,7 @@ use App\Models\JobTitle;
 use App\Models\Competency;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 
@@ -99,13 +100,13 @@ class EventController extends Controller
 
     $schedule = collect();
 
-    collect($diff)->each(function($requiredCompetencyId) use ($faker, $schedule){
+    collect($diff)->each(function($requiredCompetencyId) use ($faker, $schedule, $people){
      
       $competency = Competency::find($requiredCompetencyId);
 
       [$startDate, $endDate] = $this->getDates();
 
-      $event = Event::where('competency_id', $requiredCompetencyId)->first();
+      $event = Event::where('competency_id', $requiredCompetencyId)->whereDate('start_date','>', Carbon::now())->first();
 
       if($event===null){
         $event = Event::create([
@@ -117,7 +118,9 @@ class EventController extends Controller
           'end_date'      => $endDate->format('Y-m-d'),
           'end_time'      => $endDate->format('H:i:s'),
         ]);
-      } 
+      };
+
+      $people->events()->attach($event->id);
 
       $schedule->push([
         $requiredCompetencyId => $event->fullStartDate

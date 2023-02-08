@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\EventController;
 use App\Http\Controllers\API\PeopleController;
 use App\Http\Controllers\API\JobTitleController;
@@ -24,11 +26,10 @@ use App\Http\Controllers\API\CompetencyController;
 Route::post('login', [AuthController::class, 'login'])->withoutMiddleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', [UserController::class, 'show'])->name('user.show');
     Route::get('job-title/all', [JobTitleController::class, 'getAll']);
     Route::get('competencies/types', [CompetencyController::class, 'groupByType']);
+    Route::get('peoples/export/{id}', [PeopleController::class,'export']);
     Route::post('events/generate', [EventController::class,'generate']);
     Route::post('logout', [AuthController::class,'logout']);	
 

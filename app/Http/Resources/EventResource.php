@@ -29,6 +29,7 @@ class EventResource extends JsonResource
 
             'extendedProps'   => [
                 'peoples'    => $this->peoples,
+                'competency_id'    => $this->competency_id,
                 'description'    => $this->description,
                 $this->mergeWhen(!$this->isRepeated(), [
                     'hasEndTime'   => !is_null($this->end_time),

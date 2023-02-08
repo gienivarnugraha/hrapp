@@ -15,7 +15,7 @@
               <template v-slot:activator="{ props }">
 
                 <v-btn size="small" class="w-100" :rounded="false" prepend-icon="mdi-plus" variant="flat"
-                  v-bind="props">Add People</v-btn>
+                  v-bind="props">Add</v-btn>
               </template>
 
               <v-card class="pa-4" min-width="300" title="Add People" :disabled="addModel.loading"
@@ -30,7 +30,7 @@
 
                   <v-autocomplete label="Position" v-model="addModel.position" :items="positions"></v-autocomplete>
 
-                  <v-autocomplete label="Job Title" v-model="addModel.job_title_id" :items="jobTitles"  item-value="id" item-title="name"></v-autocomplete>
+                  <v-autocomplete label="Job Title" v-model="addModel.job_title_id" :items="jobTitles"  item-value="id" item-title="name"></v-autocomplete> 
 
                   <v-card-subtitle>Skills:</v-card-subtitle>
 
@@ -314,8 +314,6 @@ const generateSchedule = async (people) => {
 
     let findPeople = expanded.value.find(ppl => ppl.id === people.id)
 
-    console.log(findPeople);
-
     events.forEach(event => {
       let compId = Object.keys(event)[0];
 
@@ -324,7 +322,6 @@ const generateSchedule = async (people) => {
 
         if(competency) {
           competency['start_date'] = moment(event[compId]).format('YYYY-MM-DD HH:mm')
-          console.log(competency);
         }
       })
     })
@@ -362,10 +359,11 @@ const getCompetencies = async () => {
     console.error(error);
   }
 }
+
 const getJobs = async () => {
   try {
     const { data: jobs } = await axios.get('/api/job-title/all')
-    jobTitles.value = jobs[0]
+    jobTitles.value = jobs
   } catch (error) {
     console.error(error);
   }
@@ -421,11 +419,10 @@ const onDelete = async (id) => {
   }
 }
 
-onMounted(async() => {
-  await getPeoples()
-  await getCompetencies()
-  await getJobs()
-
+onMounted(() => {
+  getPeoples()
+  getCompetencies()
+  getJobs()
 })
 </script>
 

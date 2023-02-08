@@ -10,6 +10,9 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     isAuthenticated: (state) => !_.isEmpty(state.user),
+    isMGR: (state) => state.user.role === 'MGR' || state.user.role === 'ADMIN',
+    isHRBP: (state) => state.user.role === 'HRBP' || state.user.role === 'ADMIN',
+    isSME: (state) => state.user.role === 'SME' || state.user.role === 'ADMIN',
     currentUser: (state) => state.user
   },
   actions: {
