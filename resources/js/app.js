@@ -20,15 +20,14 @@ const router = createRouter({
   routes,
 })
 
+pinia.use(({ store }) => { store.router = markRaw(router) });
+
 app.use(Vuetify)
 app.use(router)
 app.use(pinia)
 
 
 const { isAuthenticated } = storeToRefs(useUserStore())
-const { getUser } = useUserStore()
-
-getUser()
 
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} - HRAPP`

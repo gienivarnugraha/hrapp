@@ -5,11 +5,14 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-text-field class="my-4" color="primary" v-model="email" :rules="emailRules" label="E-mail"
+          <v-text-field class="my-4" color="primary" :error-messages="errors['email']"
+            :error="errors['email'] ? true : false" v-model="email" :rules="emailRules" label="E-mail"
             required></v-text-field>
 
-          <v-text-field class="my-4" color="primary" v-model="password" :counter="10" label="Password" type="password"
-            required></v-text-field>
+          <v-text-field class="my-4" color="primary" :error-messages="errors['password']"
+            :error="errors['password'] ? true : false" v-model="password" :counter="12" label="Password"
+            :type="showPassword ? 'input' : 'password'" :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append="showPassword = !showPassword" required></v-text-field>
 
           <v-btn color="primary" class="me-4" @click="submit">
             Submit
@@ -25,15 +28,18 @@
   </v-container>
 </template>
 <script setup>
-import { useRouter } from 'vue-router'
 import { useUserStore } from '../store/user';
 
-const router = useRouter()
 const { login } = useUserStore()
 
 const valid = ref(false)
 const password = ref('')
 const email = ref('')
+
+const showPassword = ref(false)
+
+const errors = ref({})
+
 const emailRules = [
   v => !!v || 'E-mail is required',
   v => /.+@.+/.test(v) || 'E-mail must be valid',
@@ -45,16 +51,11 @@ async function submit() {
     const { valid } = await form.value.validate()
 
     if (valid) {
-
       await login({ email, password })
-
-      await router.push({ name: 'dashboard' })
-
     }
 
   } catch (error) {
-    console.log(error);
-
+    errors.value = error.errors
   }
 }
 

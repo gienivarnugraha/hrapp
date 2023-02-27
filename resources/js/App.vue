@@ -6,8 +6,8 @@
       <template v-slot:append class="mr-10">
         <v-tooltip text="Theme">
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" location="bottom"
-              :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="onClick"></v-btn>
+            <v-btn v-bind="props" location="bottom" :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+              @click="onClick"></v-btn>
           </template>
         </v-tooltip>
 
@@ -45,8 +45,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from './store/user';
 
 const router = useRouter()
-const { isAuthenticated, currentUser} = storeToRefs(useUserStore())
-const {logout:logoutService} = useUserStore()
+const { isAuthenticated, currentUser } = storeToRefs(useUserStore())
+const { logout: logoutService, getUser } = useUserStore()
 
 const menus = [
   { id: 1, icon: 'mdi-folder', title: 'Dashboard', value: 'dashboard', to: '/dashboard' },
@@ -76,6 +76,10 @@ const logout = async () => {
     loading.value = false
   }
 }
+
+onMounted(() => {
+  getUser()
+})
 </script>
 
 

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import _ from 'lodash';
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies();
@@ -10,41 +9,63 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     isAuthenticated: (state) => !_.isEmpty(state.user),
-    isMGR: (state) => state.user.role === 'MGR' || state.user.role === 'ADMIN',
-    isHRBP: (state) => state.user.role === 'HRBP' || state.user.role === 'ADMIN',
-    isSME: (state) => state.user.role === 'SME' || state.user.role === 'ADMIN',
     currentUser: (state) => state.user
   },
   actions: {
-    getUser(){
-      axios.get('/api/user').then(({data:user})=> {
+    async getUser() {
+      if (_.isEmpty(cookies.get('user'))) {
+        try {
+          const { data: user } = await axios.get('/api/user')
+
+          cookies.set('user',user)
+
+          this.user = user;
+
+          return user
+
+        } catch (error) {
+          console.log(error);
+
+          if (error.response.status === 401) {
+            cookies.remove('user');
+          }
+        }
+      } else {
+        const user = cookies.get('user')
+
         this.user = user;
-        return user
-      }).catch((err) => {
-        console.log(err);
-      })
+      }
+      return this.user
     },
-    async login({email, password}) {
+    async login({ email, password }) {
       try {
         await axios.get('sanctum/csrf-cookie')
-  
-        const login = await axios.post('api/login', {
+
+        await axios.post('api/login', {
           email: email.value,
           password: password.value
         })
 
-        this.getUser();
-        
-  
+        await this.getUser();
+
+        await this.router.push('/dashboard');
+
       } catch (error) {
-        console.log('loginerror', error);
+        console.log(error);
+        if (error.response.status === 401) {
+          cookies.remove('user');
+        }
+
+        throw error.response.data;
       }
     },
     logout() {
       axios.post('/api/logout').then(response => {
         this.user = {};
+        cookies.remove('user');
+
       }).catch(error => {
-        console.log('logoout error: ',error);
+        console.log('logoout error: ', error);
       });
 
     }
