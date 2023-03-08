@@ -44,116 +44,108 @@
       </v-card-item>
 
       <v-card-text>
-        <Loading v-if="loading"></Loading>
-        <v-table fixed-header height="75vh" v-else>
-          <thead>
+        <v-data-table-server :headers="headers" :items="items" :items-length="total" :loading="loading"
+          :items-per-page="15" item-value="id" item-title="name" show-expand @update:options="options = $event"
+          @update:expanded="onExpand($event)" @update:page="getJobs($event)">
+          <template v-slot:expanded-row="{ columns, item }">
             <tr>
-              <th v-for="header in headers" :key="header.title" :class="header.class">
-                {{ header.title }}
-              </th>
+              <td :colspan="columns.length">
+                <v-card elevation="0">
+                  <v-card-item class="px-8">
+                    <v-row align="center">
+                      <v-col cols="1" class="text-center">
+                        <v-icon>mdi-briefcase</v-icon>
+                      </v-col>
+                      <v-col cols="7">
+                        <v-card-item>
+                          <v-card-title>
+                            {{ item.raw.name }}
+                          </v-card-title>
+                          <v-card-subtitle> Required Competencies </v-card-subtitle>
+                        </v-card-item>
+                      </v-col>
+                      <v-col :cols="item.raw.position ? 2 : 4">
+                        <v-select class="w-100" :items="positions" v-model="item.raw.position" label="Position"
+                          density="compact" hide-details></v-select>
+                      </v-col>
+                      <v-col v-if="item.raw.position" class="text-right">
+                        <v-menu :key="item.raw.id" v-model="item.raw.edit" :close-on-content-click="false" location="end">
+                          <template v-slot:activator="{ props }">
+                            <v-btn size="small" color="info" class="w-75" :rounded="false" v-bind="props"
+                              prepend-icon="mdi-pencil" variant="flat">Edit</v-btn>
+                          </template>
+
+                          <v-card min-width="300" max-width="600"
+                            :title="`Edit Job Title for ${item.raw.position} position `" class="pa-4" :disabled="loading">
+                            <v-card-text>
+                              <v-text-field v-model="item.raw.name" label="Job Name"></v-text-field>
+
+                              <v-select label="Select Hard Skills" return-object
+                                v-model="item.raw.competencies[item.raw.position]['hard']" :items="competencies['hard']"
+                                item-value="id" item-title="name" chips multiple :value-comparator="compare"></v-select>
+                              <v-select label="Select Soft Skills" return-object
+                                v-model="item.raw.competencies[item.raw.position]['soft']" :items="competencies['soft']"
+                                item-value="id" item-title="name" chips multiple :value-comparator="compare"></v-select>
+                              <v-select label="Select DOA Skills" return-object
+                                v-model="item.raw.competencies[item.raw.position]['doa']" :items="competencies['doa']"
+                                item-value="id" item-title="name" chips multiple :value-comparator="compare"></v-select>
+
+                            </v-card-text>
+                            <v-card-actions>
+                              <v-spacer></v-spacer>
+
+                              <v-btn variant="text" color="gray-lighten-2" @click="item.raw.edit = false">
+                                Cancel
+                              </v-btn>
+                              <v-btn color="primary" variant="flat" :rounded="false" @click="onSave(item.raw)">
+                                Save
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                  </v-card-item>
+                  <v-card-text v-if="item.raw.position">
+                    <competency-list :items="item.raw.competencies[item.raw.position]['hard']"
+                      header="Hard Skills"></competency-list>
+                    <competency-list :items="item.raw.competencies[item.raw.position]['soft']"
+                      header="Soft Skills"></competency-list>
+                    <competency-list :items="item.raw.competencies[item.raw.position]['doa']"
+                      header="DOA Skills"></competency-list>
+                  </v-card-text>
+                </v-card>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <template v-for="item in items" :key="item.id">
-              <tr>
-                <td>{{ item.name }}</td>
-                <td class="text-center"> <v-icon @click="onExpand(item)" :icon="item.expanded ?'mdi-arrow-up-drop-circle': 'mdi-arrow-down-drop-circle'"></v-icon> </td>
-              </tr>
-              <v-slide-y-transition>
-                <tr v-if="item.expanded">
-                  <td :colspan="headers.length" class="py-4">
-                    <v-card elevation="0">
-                      <v-card-item class="px-8">
-                        <v-row align="center">
-                          <v-col cols="1" class="text-center">
-                            <v-icon>mdi-briefcase</v-icon>
-                          </v-col>
-                          <v-col cols="7">
-                            <v-card-item>
-                              <v-card-title>
-                                {{ item.name }}
-                              </v-card-title>
-                              <v-card-subtitle> Required Competencies </v-card-subtitle>
-                            </v-card-item>
-                          </v-col>
-                          <v-col :cols="item.position ? 2 : 4">
-                            <v-select class="w-100" :items="positions" v-model="item.position" label="Position"
-                              density="compact"  hide-details></v-select>
-                          </v-col>
-                          <v-col v-if="item.position" class="text-right">
-                            <v-menu :key="item.id" v-model="item.edit" :close-on-content-click="false" location="end">
-                              <template v-slot:activator="{ props }">
-                                <v-btn size="small" color="info" class="w-75" :rounded="false" v-bind="props" prepend-icon="mdi-pencil"
-                                  variant="flat">Edit</v-btn>
-                              </template>
+          </template>
 
-                              <v-card min-width="300" max-width="600" :title="`Edit Job Title for ${item.position} position `" class="pa-4" :disabled="loading">
-                                <v-card-text>
-                                  <v-text-field v-model="item.name" label="Job Name" hide-details></v-text-field>
-
-                                  <v-select label="Select Hard Skills" return-object v-model="item.competencies[item.position]['hard']"
-                                    :items="competencies['hard']" item-value="id" item-title="name" chips multiple
-                                    :value-comparator="compare"></v-select>
-                                  <v-select label="Select Soft Skills" return-object v-model="item.competencies[item.position]['soft']"
-                                    :items="competencies['soft']" item-value="id" item-title="name" chips multiple
-                                    :value-comparator="compare"></v-select>
-                                  <v-select label="Select DOA Skills" return-object v-model="item.competencies[item.position]['doa']"
-                                    :items="competencies['doa']" item-value="id" item-title="name" chips multiple
-                                    :value-comparator="compare"></v-select>
-
-                                </v-card-text>
-                                <v-card-actions>
-                                  <v-spacer></v-spacer>
-
-                                  <v-btn variant="text" color="gray-lighten-2" @click="item.edit = false">
-                                    Cancel
-                                  </v-btn>
-                                  <v-btn color="primary" variant="flat" :rounded="false" @click="onSave(item)">
-                                    Save
-                                  </v-btn>
-                                </v-card-actions>
-                              </v-card>
-                            </v-menu>
-                          </v-col>
-                        </v-row>
-                      </v-card-item>
-                      <v-card-text v-if="item.position">
-                        <competency-list :items="item.competencies[item.position]['hard']" header="Hard Skills"></competency-list>
-                        <competency-list :items="item.competencies[item.position]['soft']" header="Soft Skills"></competency-list>
-                        <competency-list :items="item.competencies[item.position]['doa']" header="DOA Skills"></competency-list>
-                      </v-card-text>
-                    </v-card>
-                  </td>
-                </tr>
-              </v-slide-y-transition>
-            </template>
-          </tbody>
-        </v-table>
+          <template v-slot:item.actions="{ item }">
+            <v-btn size="x-small" color="red-lighten-2" variant="flat" @click="item.raw.modalDelete = true" icon="mdi-delete" />
+            <DialogDelete v-model="item.raw.modalDelete" name="job-title" :id="item.raw.id" :item="item.raw"  @success="onDelete" @cancel="item.raw.modalDelete = false" />
+          </template>
+        </v-data-table-server>
       </v-card-text>
-      <v-card-actions>
-        <v-pagination v-model="pagination.page" :length="pagination.lastPage" @next="getJobs(pagination.page)"
-          @prev="getJobs(pagination.page)"></v-pagination>
-      </v-card-actions>
+
     </v-card>
   </v-container>
 </template>
 
 <script setup>
 
+import { get } from '../composables/api'
+
 const headers = [
-  { title: "Name", class: "text-left", },
-  { title: "Action", class: "text-center w-25", },
+  { title: "Name", key: 'name', align: 'left' },
+  { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '25px' },
 ]
+
+const total = ref(0)
+
+const options = ref({})
 
 const items = ref([])
 
 const competencies = ref([])
-
-const expanded = ref([])
-
-const pagination = ref({
-  page: 1,
-})
 
 const loading = ref(true)
 
@@ -165,7 +157,7 @@ const positions = [
   { title: "Senior", value: 'senior' },
 ]
 
-const compare = (a, b) =>  a.id === b.id
+const compare = (a, b) => a.id === b.id
 
 const findIndex = (id) => items.value.findIndex((item) => item.id === id)
 
@@ -173,29 +165,18 @@ const addModel = reactive({
   name: ''
 })
 
-const onExpand = async (item) => {
-  const index = expanded.value.findIndex(exp => exp.id == item.id)
+const onExpand = (ids) => {
+  ids.forEach(async (id) => {
+    const item = items.value.find(item => item.id === id)
 
-  if (index < 0) {
     item.position = null
 
-    const competencies = await showCompetencies(item)
+    item.edit = false
+
+    const competencies = await showCompetencies(id)
 
     item.competencies = competencies
-
-    expanded.value.push(item)
-
-    item.edit = false
-    nextTick(() => {
-      item.expanded = true
-    })
-
-  } else {
-    item.expanded = false
-    item.edit = false
-    
-    expanded.value.splice(index, 1)
-  }
+  });
 }
 
 const getCompetencies = async () => {
@@ -211,36 +192,37 @@ const getCompetencies = async () => {
   }
 }
 
-const showCompetencies = async (item) => {
+const showCompetencies = async (id) => {
   try {
-    const { data } = await axios.get(`/api/job-title/${item.id}`)
-    
+    const { data } = await axios.get(`/api/job-title/${id}`)
+
     return data.competencies
-    
+
   } catch (error) {
     console.error(error);
-  } 
+  }
 }
 
-const getJobs = async (page = 1) => {
+const getJobs = async () => {
+  loading.value = true
   try {
-    const { data: job } = await axios.get(`/api/job-title?page=${page}`)
+    const { items: jobs, totalItems } = await get('/api/job-title', options)
 
-    items.value = job.data
+    items.value = jobs
 
-    nextTick(() => {
-      pagination.value.page = job.current_page
-      pagination.value.lastPage = job.last_page
-    })
+    total.value = totalItems
 
   } catch (error) {
     console.error(error);
   } finally {
-    loading.value = false;
+
+    nextTick(() => loading.value = false)
   }
+
 }
 
 const onSave = async (item) => {
+  loading.value = true
 
   try {
     if (item && item.edit) {
@@ -248,11 +230,11 @@ const onSave = async (item) => {
 
       const index = findIndex(item.id)
 
-      jobTitle['expanded'] = false 
-
       jobTitle['competencies'] = jobTitle['skills']
 
-      jobTitle['edit'] = false 
+      jobTitle['edit'] = false
+
+      jobTitle['position'] = item.position
 
       items.value.splice(index, 1, jobTitle)
 
@@ -266,26 +248,31 @@ const onSave = async (item) => {
 
   } catch (error) {
     console.error(error);
-  } 
+  } finally {
+    loading.value = false;
+  }
 }
 
-const onDelete = async (id) => {
-  try {
-    await axios.delete(`/api/job-title/${id}`)
+const onDelete = (id) => {
 
     const index = findIndex(id)
 
-
     items.value.splice(index, 1)
 
-
-  } catch (error) {
-    console.error(error);
-  } 
 }
 
+const unwatchQuery = watch(
+  () => options,
+  () => getJobs(),
+  { deep: true, flush: 'sync' }
+)
+
+onUnmounted(() => {
+  console.log('unwatch query')
+  unwatchQuery()
+})
+
 onMounted(async () => {
-  getJobs()
 
   if (competencies.value.length === 0) await getCompetencies()
 

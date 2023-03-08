@@ -13,30 +13,23 @@ export const useUserStore = defineStore('user', {
   },
   actions: {
     async getUser() {
-      if (_.isEmpty(cookies.get('user'))) {
-        try {
-          const { data: user } = await axios.get('/api/user')
+      try {
+        const { data: user } = await axios.get('/api/user')
 
-          cookies.set('user',user)
-
-          this.user = user;
-
-          return user
-
-        } catch (error) {
-          console.log(error);
-
-          if (error.response.status === 401) {
-            cookies.remove('user');
-          }
+        if (_.isEmpty(cookies.get('user'))) {
+          cookies.set('user', user)
         }
-      } else {
-        const user = cookies.get('user')
 
-        this.user = user;
+        this.user = user
+
+        return this.user
+      } catch (error) {
+        if (error.response.status === 401) {
+          cookies.remove('user');
+        }
       }
-      return this.user
     },
+
     async login({ email, password }) {
       try {
         await axios.get('sanctum/csrf-cookie')

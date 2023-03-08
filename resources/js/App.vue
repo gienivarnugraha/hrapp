@@ -2,16 +2,16 @@
   <v-app :theme="theme">
     <v-app-bar app :elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" v-if="isAuthenticated"></v-app-bar-nav-icon>
-
+      <div class="w-100" id="page-header">
+      </div>
       <template v-slot:append class="mr-10">
-        <v-tooltip text="Theme">
+        <v-tooltip text="Theme" location="bottom" >
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" location="bottom" :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+            <v-btn v-bind="props" :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
               @click="onClick"></v-btn>
           </template>
         </v-tooltip>
 
-        <!-- v-if="userStore.isAuthenticated" -->
         <v-tooltip text="Logout" v-if="isAuthenticated">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" location="bottom" icon="mdi-logout" :loading="loading" @click="logout"></v-btn>

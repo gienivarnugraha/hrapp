@@ -69,12 +69,12 @@ export default {
           momentTimezonePlugin,
           rrulePlugin,
         ],
-        // headerToolbar: null,
-        headerToolbar: {
-          left: 'prev,next',
-          center: 'title',
-          right: 'today'
-        },
+        headerToolbar: null,
+        // headerToolbar: {
+        //   left: 'prev,next',
+        //   center: 'title',
+        //   right: 'today'
+        // },
 
         // TODO get from current user
         // timeZone: "Asia/Jakarta",
@@ -596,15 +596,30 @@ export default {
       this.jobTitles = data
     })
 
-    if (this.calendarRef) this.calendarApi = this.calendarRef.getApi();
+    if (this.calendarRef) {
+      this.calendarApi = this.calendarRef.getApi();
+    }
+
+    this.title = this.calendarApi.view.title;
   },
 };
 </script>
 
 <template>
+  <Teleport to="#page-header">
+    <div  class="d-flex justify-space-between align-center px-4">
+      <v-btn-toggle variant="outlined" divided group color="primary">
+        <v-btn :rounded="false" color="primary" @click="prev()" icon="mdi-chevron-left" > </v-btn>
+        <v-btn :rounded="false" color="primary" @click="today()"> Today </v-btn>
+        <v-btn :rounded="false" color="primary" @click="next()" icon="mdi-chevron-right"> </v-btn>
+      </v-btn-toggle>
+      <div> <h3>{{ title }}</h3> </div>
+      <v-btn :rounded="false" @click="exportModal=true" prepend-icon="mdi-file-excel"> export </v-btn>
+    </div>
+  </Teleport>
+
   <v-container fluid>
     <v-card class="pa-4">
-      <v-btn @click="exportModal=true" prepend-icon="mdi-file-excel"> export </v-btn>
 
       <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-screen">
 

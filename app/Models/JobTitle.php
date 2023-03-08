@@ -14,7 +14,11 @@ class JobTitle extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name',];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 
     public function peoples(){
         return $this->hasMany(People::class);

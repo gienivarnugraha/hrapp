@@ -6,9 +6,10 @@ use App\Models\JobTitle;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Builder;
-
 use function PHPUnit\Framework\isEmpty;
+
+use App\Http\Resources\PaginatorResource;
+use Illuminate\Database\Eloquent\Builder;
 
 class JobTitleController extends Controller
 {
@@ -17,11 +18,17 @@ class JobTitleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $jobs = JobTitle::simplePaginate(10);
+        $itemsPerPage = $request->query('itemsPerPage');
 
-        return response()->json($jobs);
+        if ($request->user()->hasRole('ADMIN')) {
+            $paginator = JobTitle::paginate($itemsPerPage);
+        } else {
+            $paginator = JobTitle::where('user_id', $request->user()->id)->paginate($itemsPerPage);
+        }
+
+        return response()->json($paginator);
     }
 
     /**
@@ -52,7 +59,9 @@ class JobTitleController extends Controller
      */
     public function store(Request $request)
     {
-        $job = JobTitle::create($request->only('name'));
+        $job = JobTitle::make($request->only('name'));
+        $job->user_id = $request->user()->id;
+        $job->save();
 
         return response()->json($job);
     }
@@ -84,13 +93,12 @@ class JobTitleController extends Controller
 
                 $jobTitle->competencies()->attach($sync);
             });
-
         }
 
         $jobTitle['skills'] = [
-            'junior' => $jobTitle->showSkills($jobTitle, 'junior'),
-            'medior' => $jobTitle->showSkills($jobTitle, 'medior'),
-            'senior' => $jobTitle->showSkills($jobTitle, 'senior'),
+            'junior' => $jobTitle->showSkills('junior'),
+            'medior' => $jobTitle->showSkills('medior'),
+            'senior' => $jobTitle->showSkills('senior'),
         ];
 
         return response()->json($jobTitle);
@@ -109,11 +117,11 @@ class JobTitleController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    
-    public function getAll(){
-        $jobs = JobTitle::select(['id','name'])->get();
+
+    public function getAll()
+    {
+        $jobs = JobTitle::select(['id', 'name'])->get();
 
         return response()->json($jobs);
     }
-
 }

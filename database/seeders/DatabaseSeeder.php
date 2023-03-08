@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        collect(['MGR', 'ADMIN', 'SME', 'HRBP'])->each(fn($role) => $this->setRole($role) );
 
         $faker = Factory::create();
 
@@ -38,8 +39,6 @@ class DatabaseSeeder extends Seeder
         CompetencySeeder::run();
         
         PeopleSeeder::run();
-
-        collect(['MGR', 'ADMIN', 'SME', 'HRBP'])->each(fn($role) => $this->setRole($role) );
 
         JobTitle::all()->each(function (JobTitle $jobTitle) {
             collect(['junior', 'medior', 'senior'])->each(function (string $position) use ($jobTitle) {

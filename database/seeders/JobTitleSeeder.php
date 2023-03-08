@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\JobTitle;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -21,6 +22,7 @@ class JobTitleSeeder extends Seeder
                 JobTitle::create([
                     "id" => $data['0'],
                     "name" => $data['1'],
+                    "user_id" => User::all()->random()->id
                 ]);    
         }
    
