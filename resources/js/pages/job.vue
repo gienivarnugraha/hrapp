@@ -254,11 +254,9 @@ const onSave = async (item) => {
 }
 
 const onDelete = (id) => {
-
     const index = findIndex(id)
 
     items.value.splice(index, 1)
-
 }
 
 const unwatchQuery = watch(

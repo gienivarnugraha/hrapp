@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Competency;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Symfony\Component\HttpFoundation\Request;
 
 class CompetencyController extends Controller
 {
@@ -15,9 +15,11 @@ class CompetencyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response(Competency::all());
+        $itemsPerPage = $request->query('itemsPerPage');
+
+        return response(Competency::orderBy('type')->paginate($itemsPerPage));
     }
 
     /**
@@ -51,9 +53,9 @@ class CompetencyController extends Controller
      * @param  \App\Models\Competency  $Competency
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Competency $Competency)
+    public function update(Request $request, Competency $competency)
     {
-        $Competency->update($request->only(['name','type']));
+        $competency->update($request->only(['name','type']));
 
         return response()->json(['status' => 'success']);
     }
