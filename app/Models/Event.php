@@ -22,6 +22,7 @@ class Event extends Model
     'start_time',
     'end_date',
     'end_time',
+    'color',
     'all_day',
     'competency_id'
   ];

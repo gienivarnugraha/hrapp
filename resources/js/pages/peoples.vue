@@ -63,8 +63,9 @@
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
               <td :colspan="columns.length">
-                <v-card variant="outlined" color="indigo" class="pa-4 my-2" :loading="!item.raw.loaded">
-                  <v-card-title class="px-8 my-2" v-if="item.raw.loaded">
+                <Loading v-if="!item.raw.loaded" />
+                <v-card variant="outlined" color="indigo" class="pa-4 mt-2 mb-4"  v-else>
+                  <v-card-title class="px-8 my-2">
                     <v-row align="center">
                       <v-col cols="8">
                         <v-icon class="mr-4">
@@ -120,7 +121,7 @@
                   </v-card-title>
 
                   <v-slide-y-transition>
-                    <v-card-text v-if="item.raw.loaded">
+                    <v-card-text>
                       <v-row>
                         <v-col cols="6">
                           <v-card-subtitle> Competencies: </v-card-subtitle>

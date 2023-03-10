@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('note')->nullable();
 
-            $table->string('color')->default('#3788d8');
+            $table->string('color');
 
             $table->date('start_date')->index();
             $table->time('start_time')->nullable()->index();

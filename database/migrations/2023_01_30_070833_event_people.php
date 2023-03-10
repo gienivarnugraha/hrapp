@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->references('id')->on('events');
             $table->foreignId('people_id')->references('id')->on('peoples');
+            $table->boolean('is_attending')->default(0);
             $table->timestamps();
         });
     }

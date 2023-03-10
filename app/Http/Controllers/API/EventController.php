@@ -88,7 +88,7 @@ class EventController extends Controller
   public function generate(Request $request){
     ['people_id' => $peopleId, 'next_position' => $nextPosition] = $request->all();
     
-    $faker = Factory::create();
+ 
 
     $people = People::find($peopleId);
 
@@ -100,8 +100,9 @@ class EventController extends Controller
 
     $schedule = collect();
 
-    collect($diff)->each(function($requiredCompetencyId) use ($faker, $schedule, $people){
-     
+    collect($diff)->each(function($requiredCompetencyId) use ($schedule, $people){
+      $faker = Factory::create();
+
       $competency = Competency::find($requiredCompetencyId);
 
       [$startDate, $endDate] = $this->getDates();
@@ -112,6 +113,7 @@ class EventController extends Controller
         $event = Event::create([
           'competency_id' => $requiredCompetencyId,
           'title'         => "Training {$competency->name}",
+          'description'   => $faker->sentence(),
           'color'         => $faker->hexColor(),
           'start_date'    => $startDate->format('Y-m-d'),
           'start_time'    => $startDate->format('H:i:s'),

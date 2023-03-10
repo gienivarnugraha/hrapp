@@ -558,7 +558,7 @@ export default {
     },
     async exportToExcel(id) {
       try {
-        const response = await axios.get('api/peoples/export/'+id, { responseType: 'blob' })
+        const response = await axios.get('api/peoples/export/' + id, { responseType: 'blob' })
 
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
@@ -596,14 +596,16 @@ export default {
 
 <template>
   <Teleport to="#page-header">
-    <div  class="d-flex justify-space-between align-center px-4">
+    <div class="d-flex justify-space-between align-center px-4">
       <v-btn-toggle variant="outlined" divided group color="primary">
-        <v-btn :rounded="false" color="primary" @click="prev()" icon="mdi-chevron-left" > </v-btn>
+        <v-btn :rounded="false" color="primary" @click="prev()" icon="mdi-chevron-left"> </v-btn>
         <v-btn :rounded="false" color="primary" @click="today()"> Today </v-btn>
         <v-btn :rounded="false" color="primary" @click="next()" icon="mdi-chevron-right"> </v-btn>
       </v-btn-toggle>
-      <div> <h3>{{ title }}</h3> </div>
-      <v-btn :rounded="false" @click="exportModal=true" prepend-icon="mdi-file-excel"> export </v-btn>
+      <div>
+        <h3>{{ title }}</h3>
+      </div>
+      <v-btn :rounded="false" @click="exportModal = true" prepend-icon="mdi-file-excel"> export </v-btn>
     </div>
   </Teleport>
 
@@ -617,8 +619,8 @@ export default {
             <template v-slot:activator="{ props: menu }">
               <v-tooltip bottom color="teal">
                 <template v-slot:activator="{ props: tooltip }">
-                  <div style="min-height:20px;" v-bind="mergeProps(menu, tooltip)"
-                    :id="`event-activator-${arg.event.id}`" @click="onEventClick(arg.event)">
+                  <div style="min-height:20px;" v-bind="mergeProps(menu, tooltip)" :id="`event-activator-${arg.event.id}`"
+                    @click="onEventClick(arg.event)">
                     {{ createEventTitleDomNodes(arg) }}
                   </div>
                 </template>
@@ -630,58 +632,70 @@ export default {
               </v-tooltip>
 
             </template>
-            <v-card class="pa-4" width="480" :disabled="modelEvent.loading" :loading="modelEvent.loading">
+            <v-card class="pa-4" min-width="768" max-width="1280" :disabled="modelEvent.loading" :loading="modelEvent.loading">
               <v-card-item>
                 <v-card-title> {{ modelEvent.title }} </v-card-title>
                 <v-card-subtitle> {{ modelEvent.start_date }} - {{ modelEvent.start_time }} </v-card-subtitle>
               </v-card-item>
 
 
-              <v-card-text>
-                <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
-                <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
-                <v-checkbox label="All Day" v-model="modelEvent.is_all_day" @update:modelValue="modelEvent.start_time =null; modelEvent.end_time = null" color="primary"> </v-checkbox>
-                <v-row>
-                  <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                    <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
-                  </v-col>
-                  <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                    <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
-                      label="Start Time"></v-text-field>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                    <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
-                  </v-col>
-                  <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                    <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
-                      label="End Time"></v-text-field>
-                  </v-col>
-                </v-row>
+              <v-row>
+                <v-col cols="6">
 
-              </v-card-text>
+                  <v-card-text>
+                    <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
+                    <v-textarea rows="1" row-height="20" v-model="modelEvent.description"
+                      label="Description"></v-textarea>
+                    <v-checkbox label="All Day" v-model="modelEvent.is_all_day"
+                      @update:modelValue="modelEvent.start_time = null; modelEvent.end_time = null" color="primary">
+                    </v-checkbox>
+                    <v-row>
+                      <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                        <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
+                      </v-col>
+                      <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                        <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
+                          label="Start Time"></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                        <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
+                      </v-col>
+                      <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                        <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
+                          label="End Time"></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                  </v-card-text>
 
 
-              <v-card-text>
-                <v-list-subheader> Attendance Lists: </v-list-subheader>
-                <v-list lines="two" max-height="200">
-                  <v-list-item v-for="(people, index) in modelEvent.peoples" :key="people.id">
-                    <template v-slot:prepend>
-                      <v-avatar color="primary">
-                        <span class="text-h5">
-                          {{ index+ 1 }}
+                </v-col>
+                <v-col cols="6">
+                  <v-card-text>
+                    <v-list-subheader> Attendance Lists: </v-list-subheader>
+                    <v-list lines="two" max-height="200">
+                      <v-list-item v-for="(people, index) in modelEvent.peoples" :key="people.id">
+                        <template v-slot:prepend>
+                          <v-avatar color="primary">
+                            <span class="text-h5">
+                              {{ index + 1 }}
 
-                        </span>
-                      </v-avatar>
-                    </template>
-                    <v-list-item-title> {{ people.name }} </v-list-item-title>
-                    <v-list-item-subtitle> {{ people.nik }} / {{ people.org }} </v-list-item-subtitle>
+                            </span>
+                          </v-avatar>
+                        </template>
+                        <v-list-item-title> {{ people.name }} </v-list-item-title>
+                        <v-list-item-subtitle> {{ people.nik }} / {{ people.org }} </v-list-item-subtitle>
 
-                  </v-list-item>
-                </v-list>
+                      </v-list-item>
+                    </v-list>
 
-              </v-card-text>
+                  </v-card-text>
+                </v-col>
+              </v-row>
+
+
 
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -751,22 +765,21 @@ export default {
       </v-dialog>
 
       <v-dialog v-model="exportModal">
-        <v-card class="pa-4" width="480" >
+        <v-card class="pa-4" width="480">
           <v-card-title>Export per JobTitle </v-card-title>
           <v-card-text>
-            <v-autocomplete :items="jobTitles" item-value="id" item-title="name" v-model="exportJobTitle" label="Export" placeholder="Job Title to Export"> </v-autocomplete>
-          
+            <v-autocomplete :items="jobTitles" item-value="id" item-title="name" v-model="exportJobTitle" label="Export"
+              placeholder="Job Title to Export"> </v-autocomplete>
+
           </v-card-text>
 
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn color="error" :rounded="false"  variant="text"
-              @click="exportModal = false">
+            <v-btn color="error" :rounded="false" variant="text" @click="exportModal = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" :rounded="false" variant="flat"
-              @click="exportToExcel(exportJobTitle)">
+            <v-btn color="primary" :rounded="false" variant="flat" @click="exportToExcel(exportJobTitle)">
               Export
             </v-btn>
           </v-card-actions>
@@ -775,7 +788,6 @@ export default {
 
     </v-card>
   </v-container>
-
 </template>
 
 <style>
