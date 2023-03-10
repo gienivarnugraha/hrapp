@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Event;
 use App\Models\People;
 use App\Models\JobTitle;
-use App\Models\Competency;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Exports\PeoplesExport;
-use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Resources\PeopleResource;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\PeopleCollection;
-use Illuminate\Database\Eloquent\Builder;
 
 class PeopleController extends Controller
 {
@@ -24,13 +17,24 @@ class PeopleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $perpage = 25;
-        $paginator = People::with('jobTitle')->orderBy('job_title_id')->simplePaginate($perpage)->toArray();
-        $paginator['total'] = People::count();
-        $paginator['total_page'] = ceil(People::count() / $perpage);
+        $peoples = People::orderBy('job_title_id')->with('jobTitle');
 
+        if (!$request->user()->hasRole('ADMIN')) {
+            $peoples->whereHas('jobTitle', function ($query) use ($request) {
+                return $query->where('user_id', $request->user()->id);
+            });
+        }
+
+        if ($request->has('filterBy')) {
+            $peoples->where('job_title_id', $request->query('filterBy'));
+        }
+        
+
+        $itemsPerPage = $request->query('itemsPerPage') == -1 ? $peoples->count() : $request->query('itemsPerPage');
+
+        $paginator = $peoples->paginate($itemsPerPage);
 
         return response()->json($paginator);
     }
@@ -64,7 +68,7 @@ class PeopleController extends Controller
      */
     public function show(People $people)
     {
-        $jobs = JobTitle::find($people->jobTitle->id);
+        $jobs = JobTitle::find($people->job_title_id);
 
         $requiredSkills = [
             'junior' => $jobs->showSkills('junior'),
@@ -90,8 +94,7 @@ class PeopleController extends Controller
         $people->update($request->only(['name', 'nik', 'org', 'position']));
 
         if ($request->skills) {
-            $forSync = collect($request->skills)->map(function ($value, $index) use ($people, $request) {
-
+            $forSync = collect($request->skills)->map(function ($value, $index) use ($request) {
                 $sync = collect($request->skills[$index])->reduce(function ($prev, $next) {
                     $prev[] = $next['id'];
                     return $prev;
@@ -140,7 +143,7 @@ class PeopleController extends Controller
         ob_end_clean(); // this
         ob_start(); // and this
 
-        Excel::store(new PeoplesExport($id), 'export_store.xls','public');
-        return Excel::download(new PeoplesExport($id), 'export_download.xls',\Maatwebsite\Excel\Excel::XLS);
+        Excel::store(new PeoplesExport($id), 'export_store.xls', 'public');
+        return Excel::download(new PeoplesExport($id), 'export_download.xls', \Maatwebsite\Excel\Excel::XLS);
     }
 }

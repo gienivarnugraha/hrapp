@@ -7,14 +7,10 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import rrulePlugin from "@fullcalendar/rrule";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 
-import download from '../composables/download'
-
 import { mergeProps } from "vue";
-
 import { RRule } from "rrule";
 
 import { useEventStore } from "../store/event";
-import axios from "axios";
 
 export default {
   components: {
@@ -104,14 +100,12 @@ export default {
         },
 
         moreLinkClick: (arg) => {
-          console.log("more link", arg);
           this.calendarApi.gotoDate(arg.date);
 
           this.calendarApi.changeView("dayGridDay");
         },
 
         viewDidMount: (arg) => {
-          console.log("view mount", arg);
           // this.title = arg.view.title;
 
           // We don't remember the dayGridDay as
@@ -122,26 +116,22 @@ export default {
         },
 
         eventClick: (info) => {
-          console.log("event click", info.event);
 
           this.onEventClick(info.event);
         },
 
         dateClick: (data) => {
-          console.log("date click", data);
 
           this.onDateClick(data);
         },
 
 
         eventResize: (resizeInfo) => {
-          console.log("event resize", resizeInfo);
 
           this.onEventResize(resizeInfo);
         },
 
         eventDrop: (dropInfo) => {
-          console.log("event droped", dropInfo);
 
           this.onEventDrop(dropInfo);
         },
@@ -166,7 +156,6 @@ export default {
   methods: {
     mergeProps,
     onEventClick(event) {
-      console.log(event);
       let model = {};
 
       if (event.extendedProps.isRepeated) {
@@ -592,7 +581,7 @@ export default {
       this.competencies = data
     })
 
-    axios.get('/api/job-title/all').then(({ data }) => {
+    axios.get('/api/job-title').then(({ data }) => {
       this.jobTitles = data
     })
 
@@ -651,7 +640,7 @@ export default {
               <v-card-text>
                 <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
                 <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
-                <v-checkbox label="All Day" v-model="modelEvent.is_all_day" color="primary"> </v-checkbox>
+                <v-checkbox label="All Day" v-model="modelEvent.is_all_day" @update:modelValue="modelEvent.start_time =null; modelEvent.end_time = null" color="primary"> </v-checkbox>
                 <v-row>
                   <v-col :cols="modelEvent.is_all_day ? 12 : 6">
                     <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>

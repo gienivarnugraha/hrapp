@@ -6,10 +6,7 @@ use App\Models\JobTitle;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use function PHPUnit\Framework\isEmpty;
-
-use App\Http\Resources\PaginatorResource;
-use Illuminate\Database\Eloquent\Builder;
+use Spatie\Searchable\Search;
 
 class JobTitleController extends Controller
 {
@@ -20,12 +17,17 @@ class JobTitleController extends Controller
      */
     public function index(Request $request)
     {
-        $itemsPerPage = $request->query('itemsPerPage');
+        $jobs = JobTitle::orderBy('user_id')->with('user');
 
-        if ($request->user()->hasRole('ADMIN')) {
-            $paginator = JobTitle::paginate($itemsPerPage);
+        if (!$request->user()->hasRole('ADMIN')) {
+            $jobs = JobTitle::where('user_id', $request->user()->id);
+        }
+
+        if ($request->has('itemsPerPage')) {
+            $itemsPerPage = $request->query('itemsPerPage') == -1 ? $jobs->count() : $request->query('itemsPerPage');
+            $paginator = $jobs->paginate($itemsPerPage);
         } else {
-            $paginator = JobTitle::where('user_id', $request->user()->id)->paginate($itemsPerPage);
+            $paginator = $jobs->get();
         }
 
         return response()->json($paginator);
@@ -117,11 +119,12 @@ class JobTitleController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-
-    public function getAll()
+    public function search(Request $request)
     {
-        $jobs = JobTitle::select(['id', 'name'])->get();
+        $searchResults = (new Search())
+            ->registerModel(JobTitle::class, 'name')
+            ->search($request->input('q'));
 
-        return response()->json($jobs);
+        return response()->json($searchResults);
     }
 }

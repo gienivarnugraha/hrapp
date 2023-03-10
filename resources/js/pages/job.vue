@@ -1,48 +1,38 @@
 <template>
+  <Teleport to="#page-header">
+    <div class="d-flex justify-space-between align-center px-4">
+      <div class="w-25">
+        <v-icon class="mr-4" icon="mdi-briefcase" size="large" />
+        <span class="text-h6"> Job Titles </span>
+      </div>
+      <v-spacer></v-spacer>
+      <v-menu v-model="addJob" :close-on-content-click="false" location="end">
+        <template v-slot:activator="{ props }">
+          <v-btn size="small" :rounded="false" v-bind="props" prepend-icon="mdi-plus" variant="flat">Add Job Title</v-btn>
+        </template>
+
+        <v-card min-width="300" title="Add Job">
+          <v-card-text>
+            <v-textarea v-model="addModel.name" label="Job Name" density="compact"></v-textarea>
+
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn variant="text" color="error" @click="addJob = false">
+              Cancel
+            </v-btn>
+            <v-btn color="primary" variant="flat" @click="onSave()">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
+    </div>
+  </Teleport>
+
   <v-container fluid>
-    <v-card class="pa-4" :loading="loading" :disabled="loading">
-      <v-card-item class="px-8">
-        <v-row align="center">
-          <v-col cols="1" class="text-right">
-            <v-icon>mdi-briefcase</v-icon>
-          </v-col>
-          <v-col cols="9">
-            <v-card-item>
-              <v-card-title>
-                Add Job Title
-              </v-card-title>
-              <v-card-subtitle> Required Competencies </v-card-subtitle>
-            </v-card-item>
-
-          </v-col>
-          <v-col cols="2" class="text-right">
-            <v-menu v-model="addJob" :close-on-content-click="false" location="end">
-              <template v-slot:activator="{ props }">
-                <v-btn size="small" class="w-75" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
-                  variant="flat">Add</v-btn>
-              </template>
-
-              <v-card min-width="300" title="Add Job">
-                <v-card-text>
-                  <v-textarea v-model="addModel.name" label="Job Name" density="compact"></v-textarea>
-
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-
-                  <v-btn variant="text" color="error" @click="addJob = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="primary" variant="flat" @click="onSave()">
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-menu>
-          </v-col>
-        </v-row>
-      </v-card-item>
-
+    <v-card class="px-4 py-2" :loading="loading" :disabled="loading">
       <v-card-text>
         <v-data-table-server :headers="headers" :items="items" :items-length="total" :loading="loading"
           :items-per-page="15" item-value="id" item-title="name" show-expand @update:options="options = $event"
@@ -50,7 +40,7 @@
           <template v-slot:expanded-row="{ columns, item }">
             <tr>
               <td :colspan="columns.length">
-                <v-card elevation="0">
+                <v-card elevation="0" :loading="!item.raw.loaded">
                   <v-card-item class="px-8">
                     <v-row align="center">
                       <v-col cols="1" class="text-center">
@@ -106,7 +96,12 @@
                       </v-col>
                     </v-row>
                   </v-card-item>
-                  <v-card-text v-if="item.raw.position">
+
+                  <v-card-text v-if="item.raw.loaded && item.raw.position">
+                    <v-card-subtitle>
+                      Required Competencies :
+                    </v-card-subtitle>
+
                     <competency-list :items="item.raw.competencies[item.raw.position]['hard']"
                       header="Hard Skills"></competency-list>
                     <competency-list :items="item.raw.competencies[item.raw.position]['soft']"
@@ -119,10 +114,10 @@
             </tr>
           </template>
 
-          <template v-slot:item.actions="{ item }">
-            <v-btn size="x-small" color="red-lighten-2" variant="flat" @click="item.raw.modalDelete = true" icon="mdi-delete" />
-            <DialogDelete v-model="item.raw.modalDelete" name="job-title" :id="item.raw.id" :item="item.raw"  @success="onDelete" @cancel="item.raw.modalDelete = false" />
-          </template>
+          <!-- <template v-slot:item.actions="{ item }"> -->
+          <!--   <v-btn size="x-small" color="red-lighten-2" variant="flat" @click="item.raw.modalDelete = true" icon="mdi-delete" /> -->
+          <!--   <DialogDelete v-model="item.raw.modalDelete" name="job-title" :id="item.raw.id" :item="item.raw"  @success="onDelete" @cancel="item.raw.modalDelete = false" /> -->
+          <!-- </template> -->
         </v-data-table-server>
       </v-card-text>
 
@@ -135,8 +130,9 @@
 import { get } from '../composables/api'
 
 const headers = [
-  { title: "Name", key: 'name', align: 'left' },
-  { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '25px' },
+  { title: "Name", key: 'name', },
+  { title: "Head of Department", key: 'user.name', },
+  // { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '25px' },
 ]
 
 const total = ref(0)
@@ -169,6 +165,8 @@ const onExpand = (ids) => {
   ids.forEach(async (id) => {
     const item = items.value.find(item => item.id === id)
 
+    if (item.loaded === true) return
+
     item.position = null
 
     item.edit = false
@@ -176,6 +174,8 @@ const onExpand = (ids) => {
     const competencies = await showCompetencies(id)
 
     item.competencies = competencies
+
+    item.loaded = true
   });
 }
 
@@ -254,9 +254,9 @@ const onSave = async (item) => {
 }
 
 const onDelete = (id) => {
-    const index = findIndex(id)
+  const index = findIndex(id)
 
-    items.value.splice(index, 1)
+  items.value.splice(index, 1)
 }
 
 const unwatchQuery = watch(

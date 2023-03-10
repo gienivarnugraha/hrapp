@@ -17,9 +17,17 @@ class CompetencyController extends Controller
      */
     public function index(Request $request)
     {
-        $itemsPerPage = $request->query('itemsPerPage');
+        $competency = Competency::orderBy('type');
 
-        return response(Competency::orderBy('type')->paginate($itemsPerPage));
+        if( $request->has('itemsPerPage') ) {
+            $itemsPerPage = $request->query('itemsPerPage') == -1 ? $competency->count() : $request->query('itemsPerPage');
+            
+            $paginator = $competency->paginate($itemsPerPage);
+        } else {
+            $paginator = $competency->get();
+        }
+
+        return response($paginator);
     }
 
     /**

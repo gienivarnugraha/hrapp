@@ -27,11 +27,11 @@ Route::post('login', [AuthController::class, 'login'])->withoutMiddleware('auth:
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'show'])->name('user.show');
-    Route::get('job-title/all', [JobTitleController::class, 'getAll']);
     Route::get('competencies/types', [CompetencyController::class, 'groupByType']);
     Route::get('peoples/export/{id}', [PeopleController::class,'export']);
     Route::post('events/generate', [EventController::class,'generate']);
     Route::post('logout', [AuthController::class,'logout']);	
+    Route::get('job-title/search', [JobTitleController::class,'search']);	
 
     Route::apiResource('job-title', JobTitleController::class);
     Route::apiResource('competencies', CompetencyController::class)->except('show');

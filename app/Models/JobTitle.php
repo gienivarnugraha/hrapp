@@ -9,8 +9,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-class JobTitle extends Model
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
+class JobTitle extends Model implements Searchable
 {
     use HasFactory, SoftDeletes;
 
@@ -28,6 +29,14 @@ class JobTitle extends Model
         return $this->belongsToMany(Competency::class)->withPivot('position');
     }
 
+    public function getSearchResult(): SearchResult
+    {
+        return new \Spatie\Searchable\SearchResult(
+           $this,
+           $this->name,
+           $this->id
+        );
+    }
     
     public function showSkills($position=null)
     {

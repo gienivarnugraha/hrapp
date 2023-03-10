@@ -1,55 +1,40 @@
 <template>
+  <Teleport to="#page-header">
+    <div class="d-flex justify-space-between align-center px-4">
+      <div class="w-25">
+        <v-icon class="mr-4" icon="mdi-star" size="large" />
+        <span class="text-h6"> Competencies </span>
+      </div>
+      <v-spacer></v-spacer>
+      <v-menu v-model="add" :close-on-content-click="false" location="end">
+        <template v-slot:activator="{ props }">
+          <v-btn size="small" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
+            variant="flat">Add Competency</v-btn>
+        </template>
+
+        <v-card min-width="300" title="Add Competency">
+          <v-card-text>
+            <v-textarea v-model="addModel.name" label="Competency Name" density="compact"></v-textarea>
+            <v-select :items="types" v-model="addModel.type" label="Competency Type" density="compact"></v-select>
+
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn variant="text" color="error" @click="add = false">
+              Cancel
+            </v-btn>
+            <v-btn color="primary" variant="flat" @click="onSave()">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
+    </div>
+  </Teleport>
+
   <v-container fluid>
-    <v-card class="pa-4" :disabled="loading">
-      <v-card-item class="px-8">
-        <v-row align="center" no-gutters>
-          <v-col cols="1" class="text-right">
-            <v-icon class="mr-4">
-              mdi-briefcase
-            </v-icon>
-          </v-col>
-          <v-col cols="9">
-            <v-card-item>
-              <v-card-title>
-                Competencies
-              </v-card-title>
-              <v-card-subtitle> Compentency Lists </v-card-subtitle>
-            </v-card-item>
-
-          </v-col>
-          <v-col cols="2" class="text-right">
-
-            <v-menu v-model="add" :close-on-content-click="false" location="end">
-              <template v-slot:activator="{ props }">
-                <v-btn size="small" class="w-75" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
-                  variant="flat">Add</v-btn>
-              </template>
-
-              <v-card min-width="300" title="Add Competency">
-                <v-card-text>
-                  <v-textarea v-model="addModel.name" label="Competency Name" density="compact"></v-textarea>
-                  <v-select :items="types" v-model="addModel.type" label="Competency Type" density="compact"></v-select>
-
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-
-                  <v-btn variant="text" color="error" @click="add = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="primary" variant="flat" @click="onSave()">
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-menu>
-
-
-          </v-col>
-        </v-row>
-      </v-card-item>
-
-
+    <v-card class="px-4 py-2" :disabled="loading">
       <v-card-text>
         <v-data-table-server :headers="headers" :items="items" :items-length="total" :loading="loading"
           :items-per-page="15" item-value="id" item-title="name" @update:options="options = $event">
@@ -127,7 +112,7 @@ const onSave = async (item) => {
       await axios.post(`/api/competencies`, addModel)
 
       getCompetencies()
-      
+
       add.value = false
     }
 

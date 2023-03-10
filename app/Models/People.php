@@ -37,7 +37,11 @@ class People extends Model
     {
         $skills = $this->competencies->groupBy('type')->all();
 
-        $defaultSkill = ['hard' => isset($skills['hard']) ? $skills['hard'] : [], 'soft' => isset($skills['soft']) ? $skills['soft'] : [], 'doa' => isset($skill['doa']) ? $skill['doa'] : []];
+        $defaultSkill = [
+            'hard' => isset($skills['hard']) ? $skills['hard'] : [],
+            'soft' => isset($skills['soft']) ? $skills['soft'] : [], 
+            'doa' => isset($skills['doa']) ? $skills['doa'] : []
+        ];
 
         return $defaultSkill;
     }
