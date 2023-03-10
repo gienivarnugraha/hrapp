@@ -23,20 +23,21 @@ class EventResource extends JsonResource
             'allDay'          => $this->isAllDay(),
 
             $this->mergeWhen(!$this->isRepeated(), [
-                'start'           => $this->fullStartDate,
-                'end'             => $this->fullEndDate,
+                'start'  => $this->fullStartDate,
+                'end'    => $this->fullEndDate,
             ]),
 
-            'extendedProps'   => [
-                'peoples'    => $this->peoples,
-                'competency_id'    => $this->competency_id,
+            'extendedProps'      => [
+                'peoples'        => $this->peoples,
+                'competency_id'  => $this->competency_id,
+                'is_due'         => $this->isDue,
                 'description'    => $this->description,
                 $this->mergeWhen(!$this->isRepeated(), [
-                    'hasEndTime'   => !is_null($this->end_time),
+                    'hasEndTime' => !is_null($this->end_time),
                 ]),
                 $this->mergeWhen($this->isRepeated(), [
-                    'rrule'           => $this->rrule,
-                    'isRepeated'   => $this->isRepeated(),
+                    'rrule'      => $this->rrule,
+                    'isRepeated' => $this->isRepeated(),
                 ]),
                 'note'           => $this->note,
             ],

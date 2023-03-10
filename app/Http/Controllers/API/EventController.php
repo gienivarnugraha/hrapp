@@ -7,15 +7,16 @@ use App\Models\Event;
 use App\Models\People;
 use App\Models\JobTitle;
 use App\Models\Competency;
-use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use App\Mail\MailNotification;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\EventResource;
 
 class EventController extends Controller
 {
-    /**
+  /**
    * Display a listing of the resource.
    * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
    */
@@ -85,36 +86,35 @@ class EventController extends Controller
     return response()->json(['deleted' => true, 'event_id' => $event->getKey()]);
   }
 
-  public function generate(Request $request){
+  public function generate(Request $request)
+  {
     ['people_id' => $peopleId, 'next_position' => $nextPosition] = $request->all();
-    
- 
 
     $people = People::find($peopleId);
 
-    $requiredCompetencies = JobTitle::find($people->jobTitle->id)->competencies->where('pivot.position',$nextPosition)->pluck('id')->all();
+    $requiredCompetencies = JobTitle::find($people->jobTitle->id)->competencies->where('pivot.position', $nextPosition)->pluck('id')->all();
 
     $competencies = $people->competencies->pluck('id')->all();
-    
+
     $diff = collect($requiredCompetencies)->diff($competencies)->all();
 
     $schedule = collect();
 
-    collect($diff)->each(function($requiredCompetencyId) use ($schedule, $people){
+    collect($diff)->each(function ($requiredCompetencyId) use ($schedule, $people) {
       $faker = Factory::create();
 
       $competency = Competency::find($requiredCompetencyId);
 
       [$startDate, $endDate] = $this->getDates();
 
-      $event = Event::where('competency_id', $requiredCompetencyId)->whereDate('start_date','>', Carbon::now())->first();
+      $event = Event::where('competency_id', $requiredCompetencyId)->whereDate('start_date', '>', Carbon::now())->first();
 
-      if($event===null){
+      if ($event === null) {
         $event = Event::create([
           'competency_id' => $requiredCompetencyId,
           'title'         => "Training {$competency->name}",
           'description'   => $faker->sentence(),
-          'color'         => $faker->hexColor(),
+          'color'         => $faker->safeHexColor(),
           'start_date'    => $startDate->format('Y-m-d'),
           'start_time'    => $startDate->format('H:i:s'),
           'end_date'      => $endDate->format('Y-m-d'),
@@ -124,35 +124,58 @@ class EventController extends Controller
 
       $people->events()->attach($event->id);
 
+      // Notification::sendNow($people,new MailNotification());
+
       $schedule->push([
         $requiredCompetencyId => $event->fullStartDate
       ]);
-
     });
 
-    return response()->json($schedule);
+    Mail::to('nivar.nugraha@gmail.org')->send(new MailNotification($people));
 
+    return response()->json($schedule);
   }
 
-      /**
-     * Get the dates for the activity
-     *
-     * @return array
-     */
-    protected function getDates()
-    {
-      $faker = Factory::create();
+  public function attendance($eventId, Request $request)
+  {
 
-      $startDate = $faker->dateTimeBetween('+1 weeks', '+4 weeks');
-      // Round to nearest 15
-      $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
-      $startDate->setTime(date('H', rand(32400,54000)), date('i', $roundedStartSeconds), 0);
-  
-      $endDate = clone $startDate;
-      // Add one or zero days to end date and the add 30 minutes
-      $endDate->add(new \DateInterval('P' . rand(0, 1) . 'D'));
-      $endDate->add(new \DateInterval('PT30M'));
-  
-      return [$startDate, $endDate];
+    $event = Event::find($eventId);
+
+    if($event->isDue) return response()->json(['error' => 'this training is over'], 400);
+
+    $event->peoples()->syncWithoutDetaching($request->input('attendance'));
+
+    foreach ($event->peoples as $people) {
+      if($people->pivot->attended){
+        $people->competencies()->attach($event->competency_id);
+      } else {
+        $people->competencies()->dettach($event->competency_id);
+      }
     }
+
+    return response()->json(['status' => 'success']);
+  }
+
+
+  /**
+   * Get the dates for the activity
+   *
+   * @return array
+   */
+  protected function getDates()
+  {
+    $faker = Factory::create();
+
+    $startDate = $faker->dateTimeBetween('+1 weeks', '+4 weeks');
+    // Round to nearest 15
+    $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
+    $startDate->setTime(date('H', rand(32400, 54000)), date('i', $roundedStartSeconds), 0);
+
+    $endDate = clone $startDate;
+    // Add one or zero days to end date and the add 30 minutes
+    $endDate->add(new \DateInterval('P' . rand(0, 1) . 'D'));
+    $endDate->add(new \DateInterval('PT30M'));
+
+    return [$startDate, $endDate];
+  }
 }

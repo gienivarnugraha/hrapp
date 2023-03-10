@@ -1,3 +1,5 @@
+import { toRaw } from "vue";
+
 const url = '/api/events'
 
 export const useEventStore = defineStore('events', {
@@ -15,7 +17,7 @@ export const useEventStore = defineStore('events', {
       rrule: null,
       competency_id: null,
     },
-    isEditing:false,
+    isEditing: false,
     rrule: {},
     calendarApi: null,
 
@@ -51,6 +53,8 @@ export const useEventStore = defineStore('events', {
 
         this.isEditing = false;
 
+        this.eventModal = false;
+
         this.calendarApi.refetchEvents()
 
         return response.data
@@ -63,12 +67,37 @@ export const useEventStore = defineStore('events', {
     async deleteEvent(id) {
       this.model.loading = true
       try {
-        this.isEditing = false;
 
         const { data } = await axios.delete(`${url}/${id}`)
 
         this.calendarApi.refetchEvents()
 
+        this.isEditing = false;
+
+        this.eventModal = false;
+
+        return data
+
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.model.loading = false
+      }
+    },
+    async saveAttendees(eventId, payload) {
+      this.model.loading = true
+
+      let attendance = toRaw(payload).reduce(function (map, obj) {
+        map[obj.id] = { 'attended': obj.pivot.attended };
+        return map;
+      }, {});
+
+      console.log(attendance);
+
+      try {
+        const { data } = await axios.put(`${url}/${eventId}/attendance`, { attendance })
+
+        this.calendarApi.refetchEvents()
 
         return data
 

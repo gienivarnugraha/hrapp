@@ -4,17 +4,11 @@ namespace App\Exports;
 
 use App\Models\People;
 use App\Models\JobTitle;
-use App\Models\Competency;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use App\Exports\Sheets\JobTitleSheet;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class PeoplesExport implements FromArray, WithHeadings, WithStyles
 {

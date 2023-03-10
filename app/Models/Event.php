@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Pivot\EventPeople;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
@@ -34,7 +36,7 @@ class Event extends Model
    */
   public function peoples(): BelongsToMany
   {
-    return $this->belongsToMany(People::class);
+    return $this->belongsToMany(People::class)->using(EventPeople::class)->withPivot('attended');
   }
 
   /**
@@ -90,6 +92,16 @@ class Event extends Model
         $endDate->format('Y-m-d') . 'T' . $this->end_time :
         $endDate->format('Y-m-d');
     });
+  }
+
+  /**
+   * Get the full end date in UTC including the time (if has)
+   *
+   * @return \Illuminate\Database\Eloquent\Casts\Attribute
+   */
+  public function dateForHuman($date)
+  {
+    return Carbon::parse($date)->toDayDateTimeString();
   }
 
   /**

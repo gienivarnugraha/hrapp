@@ -329,6 +329,7 @@ const onDelete = async (id) => {
 }
 
 const generateSchedule = async (people) => {
+  loading.value = true
   try {
     const { data: events } = await axios.post('/api/events/generate', {
       people_id: people.id,
@@ -351,6 +352,8 @@ const generateSchedule = async (people) => {
 
   } catch (error) {
     console.error(error)
+  } finally {
+    loading.value = false
   }
 
 };

@@ -1,7 +1,12 @@
 <?php
 
+use App\Models\Event;
+use App\Models\People;
+use App\Mail\MailNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
+use App\Mail\MailNotification as MailMailNotification;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +23,11 @@ Route::get('/login', function () {
   return view('application');
 })->name('login');
 
-Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '[\/\w\.-]*')->middleware('auth:web');  
+Route::get('/notification', function () {
+  $people = People::find(1);
+
+  return Mail::to('nivar.nugraha@gmail.org')->send(new MailNotification($people));
+
+});
+
+Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '[\/\w\.-]*')->middleware('auth:web');

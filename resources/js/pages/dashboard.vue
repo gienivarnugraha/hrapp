@@ -7,7 +7,6 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import rrulePlugin from "@fullcalendar/rrule";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
 
-import { mergeProps } from "vue";
 import { RRule } from "rrule";
 
 import { useEventStore } from "../store/event";
@@ -20,7 +19,7 @@ export default {
     // Events
     const eventStore = useEventStore();
     const { model: modelEvent, isEditing, eventModal, loading: eventLoading, calendarApi } = storeToRefs(eventStore);
-    const { fetchEvents, saveEvent, deleteEvent } = eventStore;
+    const { fetchEvents, saveEvent, deleteEvent, saveAttendees } = eventStore;
 
     const calendarRef = ref()
 
@@ -34,6 +33,7 @@ export default {
       saveEvent,
       fetchEvents,
       deleteEvent,
+      saveAttendees,
 
       /* Calendar */
       calendarRef,
@@ -48,7 +48,8 @@ export default {
       competencies: [],
       jobTitles: [],
       exportModal: false,
-      exportJobTitle: null,
+      exportJobTitleId: null,
+      attendees: [],
 
 
       // TODO get from user props
@@ -154,7 +155,6 @@ export default {
     };
   },
   methods: {
-    mergeProps,
     onEventClick(event) {
       let model = {};
 
@@ -180,6 +180,7 @@ export default {
         description: event.extendedProps.description,
         competency_id: event.extendedProps.competency_id,
         peoples: event.extendedProps.peoples,
+        isDue: event.extendedProps.is_due,
         is_all_day: event.allDay,
         is_repeated: event.extendedProps.isRepeated ?? false,
         edit: false,
@@ -189,6 +190,7 @@ export default {
 
       this.eventStore.$patch((state) => {
         state.model = model;
+        state.eventModal = true;
         state.isEditing = true
       });
     },
@@ -556,9 +558,9 @@ export default {
       this.calendarApi.today();
       this.title = this.calendarApi.view.title;
     },
-    async exportToExcel(id) {
+    async exportToExcel() {
       try {
-        const response = await axios.get('api/peoples/export/' + id, { responseType: 'blob' })
+        const response = await axios.get('api/peoples/export/' + this.exportJobTitleId, { responseType: 'blob' })
 
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
@@ -572,6 +574,11 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    closeModal() {
+      this.eventModal = false;
+      this.isEditing = false;
+      this.modelEvent = {};
     }
   },
   mounted() {
@@ -611,156 +618,136 @@ export default {
 
   <v-container fluid>
     <v-card class="pa-4">
-
       <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-screen">
-
         <template #eventContent="arg">
-          <v-menu :key="arg.event.id" :close-on-content-click="false" location="end">
-            <template v-slot:activator="{ props: menu }">
-              <v-tooltip bottom color="teal">
-                <template v-slot:activator="{ props: tooltip }">
-                  <div style="min-height:20px;" v-bind="mergeProps(menu, tooltip)" :id="`event-activator-${arg.event.id}`"
-                    @click="onEventClick(arg.event)">
-                    {{ createEventTitleDomNodes(arg) }}
-                  </div>
-                </template>
-                <div style="text-align:left;">
-                  Title: {{ arg.event.title }}<br />
-                  Description: {{ arg.event.extendedProps.description }}<br />
-                  Time: {{ arg.event.start }}<br />
-                </div>
-              </v-tooltip>
-
+          <v-tooltip bottom color="teal">
+            <template v-slot:activator="{ props }">
+              <div style="min-height:20px;" v-bind="props" :id="`event-activator-${arg.event.id}`">
+                {{ createEventTitleDomNodes(arg) }}
+              </div>
             </template>
-            <v-card class="pa-4" min-width="768" max-width="1280" :disabled="modelEvent.loading" :loading="modelEvent.loading">
-              <v-card-item>
-                <v-card-title> {{ modelEvent.title }} </v-card-title>
-                <v-card-subtitle> {{ modelEvent.start_date }} - {{ modelEvent.start_time }} </v-card-subtitle>
-              </v-card-item>
 
-
-              <v-row>
-                <v-col cols="6">
-
-                  <v-card-text>
-                    <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
-                    <v-textarea rows="1" row-height="20" v-model="modelEvent.description"
-                      label="Description"></v-textarea>
-                    <v-checkbox label="All Day" v-model="modelEvent.is_all_day"
-                      @update:modelValue="modelEvent.start_time = null; modelEvent.end_time = null" color="primary">
-                    </v-checkbox>
-                    <v-row>
-                      <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                        <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
-                      </v-col>
-                      <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                        <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
-                          label="Start Time"></v-text-field>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                        <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
-                      </v-col>
-                      <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                        <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
-                          label="End Time"></v-text-field>
-                      </v-col>
-                    </v-row>
-
-                  </v-card-text>
-
-
-                </v-col>
-                <v-col cols="6">
-                  <v-card-text>
-                    <v-list-subheader> Attendance Lists: </v-list-subheader>
-                    <v-list lines="two" max-height="200">
-                      <v-list-item v-for="(people, index) in modelEvent.peoples" :key="people.id">
-                        <template v-slot:prepend>
-                          <v-avatar color="primary">
-                            <span class="text-h5">
-                              {{ index + 1 }}
-
-                            </span>
-                          </v-avatar>
-                        </template>
-                        <v-list-item-title> {{ people.name }} </v-list-item-title>
-                        <v-list-item-subtitle> {{ people.nik }} / {{ people.org }} </v-list-item-subtitle>
-
-                      </v-list-item>
-                    </v-list>
-
-                  </v-card-text>
-                </v-col>
-              </v-row>
-
-
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-
-                <v-btn color="error" :rounded="false" :loading="modelEvent.loading" variant="text"
-                  @click="deleteEvent(arg.event.id)">
-                  Delete
-                </v-btn>
-                <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
-                  @click="saveEvent(modelEvent)">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-menu>
-
-
-
-
+            <div style="text-align:left;">
+              Title: {{ arg.event.title }}<br />
+              Description: {{ arg.event.extendedProps.description }}<br />
+              Time: {{ arg.event.start }}<br />
+            </div>
+          </v-tooltip>
         </template>
       </FullCalendar>
 
-
-      <v-dialog v-model="eventModal">
-        <v-card class="pa-4" width="480" :disabled="modelEvent.loading" :loading="modelEvent.loading">
-          <v-card-title>Add Event </v-card-title>
-          <v-card-text>
-            <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
-            <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
-            <v-select label="Competency" v-model="modelEvent.competency_id" :items="competencies" item-value="id"
-              item-title="name"> </v-select>
-            <v-checkbox label="All Day" v-model="modelEvent.is_all_day" color="primary"> </v-checkbox>
+      <v-dialog v-model="eventModal" persistent>
+        <v-card class="pa-4" min-width="768" max-width="1280" :disabled="modelEvent.loading"
+          :loading="modelEvent.loading">
+          <v-card-item>
             <v-row>
-              <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
+              <v-col cols="11">
+                <v-card-title> {{ isEditing ? modelEvent.title : `Add Event on ${modelEvent.start_date}` }}
+                </v-card-title>
+                <v-card-subtitle v-if="isEditing"> {{ modelEvent.start_date }} - {{ modelEvent.start_time }}
+                </v-card-subtitle>
               </v-col>
-              <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
-                  label="Start Time"></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col :cols="modelEvent.is_all_day ? 12 : 6">
-                <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
-              </v-col>
-              <v-col v-if="!modelEvent.is_all_day" :cols="6">
-                <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
-                  label="End Time"></v-text-field>
+              <v-col class="text-right">
+                <v-icon :loading="modelEvent.loading" @click="closeModal()" icon="mdi-close">
+                </v-icon>
               </v-col>
             </v-row>
 
-          </v-card-text>
+          </v-card-item>
+
+          <v-row>
+            <v-col :cols="isEditing ? 6 : 12">
+              <div class="px-4 pt-2 text-right">
+                <v-btn v-if="isEditing" size="small" :loading="modelEvent.loading"
+                  @click="modelEvent.edit = !modelEvent.edit" :rounded="false" variant="flat"
+                  :color="modelEvent.edit ? 'error' : 'primary'"
+                  :disabled="modelEvent.isDue"
+                  :prepend-icon="modelEvent.edit ? 'mdi-close' : 'mdi-pencil'">{{ modelEvent.edit ? 'Cancel' :
+                    'Edit' }}</v-btn>
+              </div>
+
+              <v-card variant="flat" :disabled="!modelEvent.edit || modelEvent.isDue">
+                <v-card-text>
+                  <v-text-field v-model="modelEvent.title" label="Title"></v-text-field>
+                  <v-textarea rows="1" row-height="20" v-model="modelEvent.description" label="Description"></v-textarea>
+                  <v-checkbox label="All Day" v-model="modelEvent.is_all_day"
+                    @update:modelValue="modelEvent.start_time = null; modelEvent.end_time = null" color="primary">
+                  </v-checkbox>
+                  <v-row>
+                    <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                      <v-text-field type="date" v-model="modelEvent.start_date" label="Start Date"></v-text-field>
+                    </v-col>
+                    <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                      <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.start_time"
+                        label="Start Time"></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col :cols="modelEvent.is_all_day ? 12 : 6">
+                      <v-text-field type="date" v-model="modelEvent.end_date" label="End Date"></v-text-field>
+                    </v-col>
+                    <v-col v-if="!modelEvent.is_all_day" :cols="6">
+                      <v-text-field type="time" v-if="!modelEvent.is_all_day" v-model="modelEvent.end_time"
+                        label="End Time"></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+
+                <v-card-actions v-if="modelEvent.edit">
+                  <v-spacer></v-spacer>
+                  <v-btn v-if="isEditing" color="error" :rounded="false" :loading="modelEvent.loading" variant="text"
+                    @click="deleteEvent(modelEvent.event_id)">
+                    Delete
+                  </v-btn>
+                  <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
+                    @click="saveEvent(modelEvent)">
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+
+
+
+            </v-col>
+            <v-col cols="6" v-if="isEditing">
+              <v-card variant="flat" :disabled="modelEvent.isDue">
+                <v-card-text>
+                  <v-list-subheader> Attendance Lists: </v-list-subheader>
+                  <v-list lines="two">
+                    <v-list-item v-for="(people, index) in modelEvent.peoples" :key="people.id">
+                      <template v-slot:prepend>
+                        <v-avatar color="primary">
+                          <span class="text-h5">
+                            {{ index + 1 }}
+
+                          </span>
+                        </v-avatar>
+                      </template>
+                      <v-list-item-title> {{ people.name }} </v-list-item-title>
+                      <v-list-item-subtitle> {{ people.nik }} / {{ people.org }} </v-list-item-subtitle>
+
+                      <template v-slot:append>
+                        <v-checkbox hide-details v-model="people.pivot.attended"></v-checkbox>
+                      </template>
+                    </v-list-item>
+                  </v-list>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
+                      @click="saveAttendees(modelEvent.event_id, modelEvent.peoples)">
+                      Save Attendance
+                    </v-btn>
+                  </v-card-actions>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
 
           <v-card-actions>
-            <v-spacer></v-spacer>
-
-            <v-btn color="error" :rounded="false" :loading="modelEvent.loading" variant="text"
-              @click="eventModal = false">
-              Cancel
-            </v-btn>
-            <v-btn color="primary" :rounded="false" :loading="modelEvent.loading" variant="flat"
-              @click="saveEvent(modelEvent)">
-              Save
-            </v-btn>
+            <v-alert v-if="modelEvent.isDue" text="This Training is over" type="error" icon="mdi-alert"> </v-alert>
           </v-card-actions>
+
         </v-card>
       </v-dialog>
 
@@ -768,7 +755,7 @@ export default {
         <v-card class="pa-4" width="480">
           <v-card-title>Export per JobTitle </v-card-title>
           <v-card-text>
-            <v-autocomplete :items="jobTitles" item-value="id" item-title="name" v-model="exportJobTitle" label="Export"
+            <v-autocomplete :items="jobTitles" item-value="id" item-title="name" v-model="exportJobTitleId" label="Export"
               placeholder="Job Title to Export"> </v-autocomplete>
 
           </v-card-text>
@@ -779,7 +766,7 @@ export default {
             <v-btn color="error" :rounded="false" variant="text" @click="exportModal = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" :rounded="false" variant="flat" @click="exportToExcel(exportJobTitle)">
+            <v-btn color="primary" :rounded="false" variant="flat" @click="exportToExcel">
               Export
             </v-btn>
           </v-card-actions>

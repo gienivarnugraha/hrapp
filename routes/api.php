@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('competencies/types', [CompetencyController::class, 'groupByType']);
     Route::get('peoples/export/{id}', [PeopleController::class,'export']);
     Route::post('events/generate', [EventController::class,'generate']);
+    Route::put('events/{id}/attendance', [EventController::class,'attendance']);
     Route::post('logout', [AuthController::class,'logout']);	
     Route::get('job-title/search', [JobTitleController::class,'search']);	
 
