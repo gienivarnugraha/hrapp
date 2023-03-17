@@ -2,18 +2,20 @@
 
 namespace App\Mail;
 
+use App\Models\Event;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class MailNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
     protected $people;
+    protected $events;
     /**
      * Create a new message instance.
      *
@@ -22,6 +24,10 @@ class MailNotification extends Mailable
     public function __construct($people)
     {
         $this->people = $people;
+        $this->events = Event::whereHas('peoples', function ($query) use ($people) {
+            $query->where('attended', false);
+            $query->where('people_id', '=', $people->id);
+        })->get();
     }
 
     /**
@@ -46,7 +52,8 @@ class MailNotification extends Mailable
         return new Content(
             view: 'email',
             with: [
-                'people' => $this->people
+                'people' => $this->people,
+                'events' => $this->events
             ],
         );
     }

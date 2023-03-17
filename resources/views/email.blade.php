@@ -8,9 +8,9 @@
 <body>
     <h3>Hello {{ $people->name }} ! </h3>
 
-    <p>You have <b> {{ $people->events()->count() }} </b> trainings to attend: </p>
+    <p>You have <b> {{ $events->count() }} </b> trainings to attend: </p>
 
-    @foreach ($people->events as $event)
+    @foreach ($events as $event)
         <div
             style="padding: 8px !important; 
                    border: 2px dashed rgb(145, 28, 241); 
