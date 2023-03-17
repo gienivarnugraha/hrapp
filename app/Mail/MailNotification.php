@@ -32,7 +32,7 @@ class MailNotification extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Training',
+            subject: 'Training Schedule',
         );
     }
 

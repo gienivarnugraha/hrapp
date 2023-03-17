@@ -122,16 +122,16 @@ class EventController extends Controller
         ]);
       };
 
-      $people->events()->attach($event->id);
-
-      // Notification::sendNow($people,new MailNotification());
+      if ($people->events()->where('event_id', $event->id)->count() == 0) {
+        $people->events()->attach($event->id);
+      }
 
       $schedule->push([
         $requiredCompetencyId => $event->fullStartDate
       ]);
     });
 
-    Mail::to('nivar.nugraha@gmail.org')->send(new MailNotification($people));
+    Mail::to($people->email)->send(new MailNotification($people));
 
     return response()->json($schedule);
   }
@@ -141,12 +141,12 @@ class EventController extends Controller
 
     $event = Event::find($eventId);
 
-    if($event->isDue) return response()->json(['error' => 'this training is over'], 400);
+    if ($event->isDue) return response()->json(['error' => 'this training is over'], 400);
 
     $event->peoples()->syncWithoutDetaching($request->input('attendance'));
 
     foreach ($event->peoples as $people) {
-      if($people->pivot->attended){
+      if ($people->pivot->attended) {
         $people->competencies()->attach($event->competency_id);
       } else {
         $people->competencies()->dettach($event->competency_id);

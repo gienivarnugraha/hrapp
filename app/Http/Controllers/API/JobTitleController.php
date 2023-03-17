@@ -20,7 +20,7 @@ class JobTitleController extends Controller
         $jobs = JobTitle::orderBy('user_id')->with('user');
 
         if (!$request->user()->hasRole('ADMIN')) {
-            $jobs = JobTitle::where('user_id', $request->user()->id);
+            $jobs->where('user_id', $request->user()->id);
         }
 
         if ($request->has('itemsPerPage')) {
@@ -103,6 +103,8 @@ class JobTitleController extends Controller
             'senior' => $jobTitle->showSkills('senior'),
         ];
 
+        $jobTitle['user'] = $request->user();
+
         return response()->json($jobTitle);
     }
 
@@ -128,3 +130,4 @@ class JobTitleController extends Controller
         return response()->json($searchResults);
     }
 }
+

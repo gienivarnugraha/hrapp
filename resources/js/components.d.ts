@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     CompetencyList: typeof import('./components/CompetencyList.vue')['default']
-    DeleteDialog: typeof import('./components/DeleteDialog.vue')['default']
     DialogDelete: typeof import('./components/DialogDelete.vue')['default']
     Loading: typeof import('./components/Loading.vue')['default']
     Modal: typeof import('./components/People/Modal.vue')['default']

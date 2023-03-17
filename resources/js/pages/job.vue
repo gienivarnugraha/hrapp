@@ -234,12 +234,16 @@ const onSave = async (item) => {
 
       jobTitle['edit'] = false
 
+      jobTitle['loaded'] = true
+
       jobTitle['position'] = item.position
 
       items.value.splice(index, 1, jobTitle)
 
     } else {
       const { data: competency } = await axios.post(`/api/job-title`, addModel)
+
+      competency['loaded'] = true
 
       items.value.push(competency)
 
