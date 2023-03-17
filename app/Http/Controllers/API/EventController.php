@@ -166,14 +166,18 @@ class EventController extends Controller
   {
     $faker = Factory::create();
 
-    $startDate = $faker->dateTimeBetween('+1 weeks', '+4 weeks');
+    $startDate = Carbon::createFromDate($faker->dateTimeBetween('+1 weeks', '+4 weeks'));
+
+    if($startDate->isWeekend()){
+      $startDate->addWeekday('+1');
+    }
     // Round to nearest 15
     $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
     $startDate->setTime(date('H', rand(32400, 54000)), date('i', $roundedStartSeconds), 0);
 
     $endDate = clone $startDate;
     // Add one or zero days to end date and the add 30 minutes
-    $endDate->add(new \DateInterval('P' . rand(0, 1) . 'D'));
+    $endDate->addWeekday('+'.rand(1,2));
     $endDate->add(new \DateInterval('PT30M'));
 
     return [$startDate, $endDate];
