@@ -56,6 +56,13 @@ class EventController extends Controller
 
     $event->update($request->all());
 
+    $gcal = GoogleCalendar::find($event->gcal_id);
+
+    $gcal->update([
+      'startDateTime' =>  Carbon::createFromDate($event->fullStartDate),
+      'endDateTime' =>  Carbon::createFromDate($event->fullEndDate),
+    ]);
+
     return new EventResource($event);
   }
 
@@ -111,8 +118,8 @@ class EventController extends Controller
       $event = Event::where('competency_id', $requiredCompetencyId)->whereDate('start_date', '>', Carbon::now())->first();
 
       if ($event === null) {
-        $name= "Training {$competency->name}";
-        
+        $name = "Training {$competency->name}";
+
         $gcal = GoogleCalendar::create([
           'name' => $name,
           'startDateTime' => $startDate,
@@ -130,7 +137,6 @@ class EventController extends Controller
           'end_time'      => $endDate->format('H:i:s'),
           'gcal_id'       => $gcal->googleEvent->id,
         ]);
-
       };
 
       if ($people->events()->where('event_id', $event->id)->count() == 0) {
@@ -180,7 +186,7 @@ class EventController extends Controller
 
     $startDate = Carbon::createFromDate($faker->dateTimeBetween('+1 weeks', '+4 weeks'));
 
-    if($startDate->isWeekend()){
+    if ($startDate->isWeekend()) {
       $startDate->addWeekday('+1');
     }
     // Round to nearest 15
@@ -189,7 +195,7 @@ class EventController extends Controller
 
     $endDate = clone $startDate;
     // Add one or zero days to end date and the add 30 minutes
-    $endDate->addWeekday('+'.rand(1,2));
+    $endDate->addWeekday('+' . rand(1, 2));
     $endDate->add(new \DateInterval('PT30M'));
 
     return [$startDate, $endDate];

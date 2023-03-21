@@ -5,24 +5,52 @@
       <div class="w-100" id="page-header">
       </div>
       <template v-slot:append class="mr-10">
-        <v-tooltip text="Theme" location="bottom" >
+        <v-tooltip text="Theme" location="bottom">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" :icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"
               @click="onClick"></v-btn>
           </template>
         </v-tooltip>
 
-        <v-tooltip text="Logout" v-if="isAuthenticated">
+        <v-menu v-model="account" :close-on-content-click="false" location="bottom">
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" location="bottom" icon="mdi-logout" :loading="loading" @click="logout"></v-btn>
+            <v-icon icon="mdi-account" color="primary" v-bind="props">
+            </v-icon>
           </template>
-        </v-tooltip>
+
+          <v-card min-width="400">
+            <v-list>
+              <v-list-item prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg">
+                <v-list-item-title>
+                  <v-text-field v-if="accountEdit" class="w-100" v-model="currentUser.name" density="compact" hide-details></v-text-field>
+                  <span v-else> {{ currentUser.name }} </span>
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <span> {{ currentUser.nik }} </span>
+                </v-list-item-subtitle>
+                <template v-slot:append>
+                  <v-btn v-if="accountEdit" variant="text" icon="mdi-check" @click="saveAccount"></v-btn>
+                  <v-btn variant="text" :color="accountEdit ? 'error' : 'primary'" :icon="accountEdit? 'mdi-close' : 'mdi-pencil'"
+                    @click="accountEdit = !accountEdit"></v-btn>
+                </template>
+              </v-list-item>
+            </v-list>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+              <v-btn location="bottom" prepend-icon="mdi-logout" :loading="loading" @click="logout"> Logout</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
+
+
       </template>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" temporary border v-if="isAuthenticated">
       <v-list>
-        <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg" :title="currentUser.name"
+        <v-list-item prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg" :title="currentUser.name"
           :subtitle="currentUser.nik"></v-list-item>
       </v-list>
 
@@ -58,6 +86,8 @@ const menus = [
 
 const theme = ref('light')
 const drawer = ref(false)
+const account = ref(false)
+const accountEdit = ref(false)
 const loading = ref(false)
 
 function onClick() {
@@ -71,6 +101,18 @@ const logout = async () => {
 
     router.push({ name: 'login' })
 
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false
+  }
+}
+
+const saveAccount = async () => {
+  loading.value = true
+  try {
+    await axios.put('/api/user', {name: currentUser.value.name})
+    accountEdit.value = false
   } catch (error) {
     console.log(error);
   } finally {

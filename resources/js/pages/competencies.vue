@@ -73,7 +73,7 @@ import { get } from '../composables/api'
 const headers = [
   { title: "Name", key: 'name', },
   { title: "Type", key: 'type', align: 'center', width: '20%' },
-  { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '10%' },
+  { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '15%' },
 ]
 
 const items = ref([])

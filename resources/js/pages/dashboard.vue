@@ -660,8 +660,7 @@ export default {
               <div class="px-4 pt-2 text-right">
                 <v-btn v-if="isEditing" size="small" :loading="modelEvent.loading"
                   @click="modelEvent.edit = !modelEvent.edit" :rounded="false" variant="flat"
-                  :color="modelEvent.edit ? 'error' : 'primary'"
-                  :disabled="modelEvent.isDue"
+                  :color="modelEvent.edit ? 'error' : 'primary'" :disabled="modelEvent.isDue"
                   :prepend-icon="modelEvent.edit ? 'mdi-close' : 'mdi-pencil'">{{ modelEvent.edit ? 'Cancel' :
                     'Edit' }}</v-btn>
               </div>
@@ -782,6 +781,10 @@ export default {
   margin-bottom: 0;
   padding-top: 8px;
   padding-bottom: 8px;
+}
+
+.fc .fc-daygrid-day-top {
+  justify-content: center;
 }
 
 .fc .fc-button .fc-icon {

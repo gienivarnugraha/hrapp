@@ -25,4 +25,17 @@ class UserController extends Controller
         return new UserResource(Auth::user());
     }
 
+
+    /**
+     * Update the specified resource in storage.
+     * @param Request $request
+     * @param int $id
+     * @return Renderable
+     */
+    public function update(Request $request)
+    {
+        $request->user()->update($request->only('name'));
+
+        return response()->json($request->user());
+    }
 }

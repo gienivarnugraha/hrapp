@@ -39,7 +39,7 @@ const props = defineProps({
   },
 })
 
-const dateForHuman = (date) => moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a")
+const dateForHuman = (date) => moment(date).format("dddd, MMMM Do YYYY, h:mm a")
 
 const hasComparator = (item) => props.compare && props.compare.find(comp => comp.id === item.id)
 
