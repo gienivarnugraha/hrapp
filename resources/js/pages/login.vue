@@ -1,7 +1,10 @@
 <template>
   <v-container class="pa-4 d-flex justify-center align-center" style="height:100%;">
     <v-card class="pa-4 w-50" border align="center" border-color="primary">
-      <v-card-title prepend-icon="mdi-home">Login</v-card-title>
+      
+      <img src="/storage/img/polban.png" alt="">
+
+      <v-card-title prepend-icon="mdi-home">Login Human Resource Matrix Application</v-card-title>
 
       <v-card-text>
         <v-form ref="form" v-model="valid" lazy-validation>

@@ -19,10 +19,4 @@ Route::get('/login', function () {
   return view('application');
 })->name('login');
 
-Route::get('/events', function () {
-  $events = Event::get();
-  dd($events);
-  response()->json($events);
-});
-
-Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '[\/\w\.-]*')->middleware('auth:web');
+Route::get('/{vue}', [ApplicationController::class, 'index'])->where('vue', '^(?!storage).*$')->middleware('auth:web');

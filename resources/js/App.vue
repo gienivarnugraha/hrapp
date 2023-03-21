@@ -2,6 +2,9 @@
   <v-app :theme="theme">
     <v-app-bar app :elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" v-if="isAuthenticated"></v-app-bar-nav-icon>
+      
+      <v-img src="/storage/img/polban.png" alt="" width="40" class="mx-8" />
+      
       <div class="w-100" id="page-header">
       </div>
       <template v-slot:append class="mr-10">
@@ -12,7 +15,7 @@
           </template>
         </v-tooltip>
 
-        <v-menu v-model="account" :close-on-content-click="false" location="bottom">
+        <v-menu v-if="isAuthenticated" v-model="account" :close-on-content-click="false" location="bottom">
           <template v-slot:activator="{ props }">
             <v-icon icon="mdi-account" color="primary" v-bind="props">
             </v-icon>
@@ -20,7 +23,7 @@
 
           <v-card min-width="400">
             <v-list>
-              <v-list-item prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg">
+              <v-list-item prepend-avatar="/storage/img/polban.png">
                 <v-list-item-title>
                   <v-text-field v-if="accountEdit" class="w-100" v-model="currentUser.name" density="compact" hide-details></v-text-field>
                   <span v-else> {{ currentUser.name }} </span>
@@ -50,7 +53,7 @@
 
     <v-navigation-drawer v-model="drawer" temporary border v-if="isAuthenticated">
       <v-list>
-        <v-list-item prepend-avatar="https://cdn.vuetifyjs.com/images/john.jpg" :title="currentUser.name"
+        <v-list-item prepend-avatar="/storage/img/polban.png" :title="currentUser.name"
           :subtitle="currentUser.nik"></v-list-item>
       </v-list>
 
