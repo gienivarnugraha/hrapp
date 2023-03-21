@@ -25,7 +25,7 @@
 
             <v-autocomplete label="Position" v-model="addModel.position" :items="positions"></v-autocomplete>
 
-            <v-autocomplete label="Job Title" v-model="addModel.job_title_id" :items="jobTitles" item-value="id" item-title="name" :loading="loadingSearch"></v-autocomplete>
+            <v-autocomplete label="Job Title" v-model="addModel.job_title_id" :items="jobTitles" item-value="id" item-title="name" ></v-autocomplete>
 
             <v-card-subtitle>Skills:</v-card-subtitle>
 
@@ -409,7 +409,6 @@ const unwatchQuery = watch(
 )
 
 onUnmounted(() => {
-  console.log('unwatch query')
   unwatchQuery()
 })
 

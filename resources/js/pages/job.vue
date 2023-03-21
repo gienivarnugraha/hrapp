@@ -270,7 +270,6 @@ const unwatchQuery = watch(
 )
 
 onUnmounted(() => {
-  console.log('unwatch query')
   unwatchQuery()
 })
 

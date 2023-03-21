@@ -92,8 +92,6 @@ export const useEventStore = defineStore('events', {
         return map;
       }, {});
 
-      console.log(attendance);
-
       try {
         const { data } = await axios.put(`${url}/${eventId}/attendance`, { attendance })
 

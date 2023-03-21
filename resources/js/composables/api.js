@@ -24,7 +24,7 @@ export const get = async (url, options) => {
     }
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
 }

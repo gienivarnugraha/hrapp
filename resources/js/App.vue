@@ -102,7 +102,7 @@ const logout = async () => {
     router.push({ name: 'login' })
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     loading.value = false
   }
@@ -114,7 +114,7 @@ const saveAccount = async () => {
     await axios.put('/api/user', {name: currentUser.value.name})
     accountEdit.value = false
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     loading.value = false
   }

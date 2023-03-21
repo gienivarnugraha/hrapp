@@ -117,7 +117,7 @@ const onSave = async (item) => {
     }
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     loading.value = false;
   }
@@ -135,7 +135,7 @@ const getCompetencies = async () => {
     items.value = competencies
     total.value = totalItems
   } catch (error) {
-    console.log(error);
+    console.error(error);
   } finally {
     loading.value = false;
   }
@@ -148,7 +148,6 @@ const unwatchQuery = watch(
 )
 
 onUnmounted(() => {
-  console.log('unwatch query')
   unwatchQuery()
 })
 </script>
