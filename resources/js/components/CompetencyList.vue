@@ -9,7 +9,7 @@
             <v-icon v-if="hasComparator(item)" :icon="hasComparator(item) ? 'mdi-check' : 'mdi-close'"></v-icon>
             <p v-if="item.start_date">
               <v-icon>mdi-clock</v-icon>
-               Training Start At: {{ item.start_date }} </p>
+               Training Start At: {{ dateForHuman(item.start_date) }} </p>
           </v-card-text>
         </v-card>
       </v-list-item>
@@ -38,6 +38,8 @@ const props = defineProps({
     default: 'two',
   },
 })
+
+const dateForHuman = (date) => moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a")
 
 const hasComparator = (item) => props.compare && props.compare.find(comp => comp.id === item.id)
 

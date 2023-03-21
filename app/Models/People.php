@@ -17,7 +17,7 @@ class People extends Model
 
     protected $table = 'peoples';
 
-    protected $fillable = ['name', 'nik', 'org', 'position', 'job_title_id'];
+    protected $fillable = ['name', 'nik', 'org', 'position', 'job_title_id','email'];
 
     public function competencies()
     {

@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\GoogleCalendar\Event;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UserController;

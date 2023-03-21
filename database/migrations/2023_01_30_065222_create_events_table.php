@@ -19,6 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('note')->nullable();
 
+            $table->string('gcal_id')->nullable();
+
             $table->string('color');
 
             $table->date('start_date')->index();

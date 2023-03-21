@@ -19,6 +19,8 @@
 
             <v-text-field v-model="addModel.nik" label="NIK"> </v-text-field>
 
+            <v-text-field v-model="addModel.email" label="Email"> </v-text-field>
+
             <v-text-field v-model="addModel.org" label="Organization Code"> </v-text-field>
 
             <v-autocomplete label="Position" v-model="addModel.position" :items="positions"></v-autocomplete>
@@ -85,6 +87,8 @@
                             :disabled="item.raw.loadCompetencies" :loading="item.raw.loadCompetencies">
                             <v-card-text>
                               <v-text-field label="Name" v-model="item.raw.name"></v-text-field>
+
+                              <v-text-field label="Email" v-model="item.raw.email"></v-text-field>
 
                               <v-select label="Position" v-model="item.raw.position" :items="positions"></v-select>
 
@@ -219,6 +223,7 @@ let addMenu = ref(false)
 let addModel = ref({
   name: '',
   nik: '',
+  email: '',
   org: '',
   job_title_id: null,
   position: null,

@@ -22,8 +22,8 @@ class PeopleFactory extends Factory
             'nik' => fake()->unique()->numerify('######'),
             'org' => fake()->regexify('[A-Z]{2}[0-9]{4}'),
             'job_title_id' => JobTitle::all()->random()->id,
-            //'email' => fake()->randomElement(['siti.rahma.darya@gmail.com','nivar.nugraha@gmail.com']),
-            'email' => 'siti.rahma.darya@gmail.com',
+            //'email' => fake()->randomElement(['siti.rahma.darya@gmail.com','irsanbzr19@gmail.com']),
+            'email' => 'irsanbzr19@gmail.com',
             'position' => fake()->randomElement(['junior','medior','senior']),
         ];
     }

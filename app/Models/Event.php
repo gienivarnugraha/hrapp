@@ -26,6 +26,7 @@ class Event extends Model
     'end_time',
     'color',
     'all_day',
+    'gcal_id',
     'competency_id'
   ];
 

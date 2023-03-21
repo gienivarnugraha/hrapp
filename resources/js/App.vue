@@ -41,6 +41,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useUserStore } from './store/user';
 

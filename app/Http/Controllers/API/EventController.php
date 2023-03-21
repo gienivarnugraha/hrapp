@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\EventResource;
+use Spatie\GoogleCalendar\Event as GoogleCalendar;
 
 class EventController extends Controller
 {
@@ -110,16 +111,26 @@ class EventController extends Controller
       $event = Event::where('competency_id', $requiredCompetencyId)->whereDate('start_date', '>', Carbon::now())->first();
 
       if ($event === null) {
+        $name= "Training {$competency->name}";
+        
+        $gcal = GoogleCalendar::create([
+          'name' => $name,
+          'startDateTime' => $startDate,
+          'endDateTime' => $endDate,
+        ]);
+
         $event = Event::create([
           'competency_id' => $requiredCompetencyId,
-          'title'         => "Training {$competency->name}",
+          'title'         => $name,
           'description'   => $faker->sentence(),
           'color'         => $faker->safeHexColor(),
           'start_date'    => $startDate->format('Y-m-d'),
           'start_time'    => $startDate->format('H:i:s'),
           'end_date'      => $endDate->format('Y-m-d'),
           'end_time'      => $endDate->format('H:i:s'),
+          'gcal_id'       => $gcal->googleEvent->id,
         ]);
+
       };
 
       if ($people->events()->where('event_id', $event->id)->count() == 0) {
@@ -148,6 +159,7 @@ class EventController extends Controller
     foreach ($event->peoples as $people) {
       if ($people->pivot->attended) {
         $people->competencies()->attach($event->competency_id);
+        GoogleCalendar::find($event->gcal_id)->delete();
       } else {
         $people->competencies()->dettach($event->competency_id);
       }
@@ -173,7 +185,7 @@ class EventController extends Controller
     }
     // Round to nearest 15
     $roundedStartSeconds = round($startDate->getTimestamp() / (15 * 60)) * (15 * 60);
-    $startDate->setTime(date('H', rand(32400, 54000)), date('i', $roundedStartSeconds), 0);
+    $startDate->setTime(date('H', rand(10800, 32400)), date('i', $roundedStartSeconds), 0);
 
     $endDate = clone $startDate;
     // Add one or zero days to end date and the add 30 minutes
