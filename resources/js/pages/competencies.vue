@@ -1,14 +1,14 @@
 <template>
   <Teleport to="#page-header">
     <div class="d-flex justify-space-between align-center px-4">
-      <div class="w-25">
+      <div v-if="!xs" class="w-50">
         <v-icon class="mr-4" icon="mdi-star" size="large" />
         <span class="text-h6"> Competencies </span>
       </div>
       <v-spacer></v-spacer>
       <v-menu v-model="add" :close-on-content-click="false" location="end">
         <template v-slot:activator="{ props }">
-          <v-btn size="small" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
+          <v-btn :size="xs ? 'x-small' : 'small'" :rounded="false" v-bind="props" prepend-icon="mdi-plus"
             variant="flat">Add Competency</v-btn>
         </template>
 
@@ -68,7 +68,10 @@
 </template>
 
 <script setup>
+import { useDisplay } from 'vuetify';
 import { get } from '../composables/api'
+
+const { xs } = useDisplay()
 
 const headers = [
   { title: "Name", key: 'name', },

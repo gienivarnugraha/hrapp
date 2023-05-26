@@ -1,14 +1,14 @@
 <template>
   <Teleport to="#page-header">
     <div class="d-flex justify-space-between align-center px-4">
-      <div class="w-25">
+      <div  v-if="!xs" class="w-50">
         <v-icon class="mr-4" icon="mdi-briefcase" size="large" />
         <span class="text-h6"> Job Titles </span>
       </div>
       <v-spacer></v-spacer>
       <v-menu v-model="addJob" :close-on-content-click="false" location="end">
         <template v-slot:activator="{ props }">
-          <v-btn size="small" :rounded="false" v-bind="props" prepend-icon="mdi-plus" variant="flat">Add Job Title</v-btn>
+          <v-btn :size="xs ? 'x-small' : 'small'"  :rounded="false" v-bind="props" prepend-icon="mdi-plus" variant="flat">Add Title</v-btn>
         </template>
 
         <v-card min-width="300" title="Add Job">
@@ -43,10 +43,10 @@
                 <v-card elevation="0" :loading="!item.raw.loaded">
                   <v-card-item class="px-8">
                     <v-row align="center">
-                      <v-col cols="1" class="text-center">
+                      <v-col v-if="!xs" :cols="1" class="text-center">
                         <v-icon>mdi-briefcase</v-icon>
                       </v-col>
-                      <v-col cols="7">
+                      <v-col :cols="xs ? 12 : 6">
                         <v-card-item>
                           <v-card-title>
                             {{ item.raw.name }}
@@ -54,14 +54,14 @@
                           <v-card-subtitle> Required Competencies </v-card-subtitle>
                         </v-card-item>
                       </v-col>
-                      <v-col :cols="item.raw.position ? 2 : 4">
+                      <v-col :cols="xs ? 12 : 3">
                         <v-select class="w-100" :items="positions" v-model="item.raw.position" label="Position"
                           density="compact" hide-details></v-select>
                       </v-col>
-                      <v-col v-if="item.raw.position" class="text-right">
+                      <v-col v-if="item.raw.position" class="text-right" :cols="xs ? 12 : 2">
                         <v-menu :key="item.raw.id" v-model="item.raw.edit" :close-on-content-click="false" location="end">
                           <template v-slot:activator="{ props }">
-                            <v-btn size="small" color="info" class="w-75" :rounded="false" v-bind="props"
+                            <v-btn :size="xs ? 'x-small' : 'small'" color="info" class="w-100" :rounded="false" v-bind="props"
                               prepend-icon="mdi-pencil" variant="flat">Edit</v-btn>
                           </template>
 
@@ -127,7 +127,10 @@
 
 <script setup>
 
+import { useDisplay } from 'vuetify';
 import { get } from '../composables/api'
+
+const {xs} = useDisplay ()
 
 const headers = [
   { title: "Name", key: 'name', },

@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import rrulePlugin from "@fullcalendar/rrule";
 import momentTimezonePlugin from "@fullcalendar/moment-timezone";
-
+import { useDisplay } from 'vuetify'
 import { RRule } from "rrule";
 
 import { useEventStore } from "../store/event";
@@ -23,6 +23,8 @@ export default {
 
     const calendarRef = ref()
 
+    const { xs } = useDisplay()
+
     return {
       /* events */
       eventStore,
@@ -38,6 +40,9 @@ export default {
       /* Calendar */
       calendarRef,
       calendarApi,
+
+      /* breakpoint */
+      xs
     };
   },
   data() {
@@ -603,7 +608,7 @@ export default {
 
 <template>
   <Teleport to="#page-header">
-    <div class="d-flex justify-space-between align-center px-4">
+    <div v-if="!xs" class="d-flex justify-space-between align-center px-4">
       <v-btn-toggle variant="outlined" divided group color="primary">
         <v-btn :rounded="false" color="primary" @click="prev()" icon="mdi-chevron-left"> </v-btn>
         <v-btn :rounded="false" color="primary" @click="today()"> Today </v-btn>
@@ -612,12 +617,25 @@ export default {
       <div>
         <h3>{{ title }}</h3>
       </div>
-      <v-btn :rounded="false" @click="exportModal = true" prepend-icon="mdi-file-excel"> export </v-btn>
+      <v-btn :rounded="false" size="small" @click="exportModal = true" prepend-icon="mdi-file-excel"> export </v-btn>
     </div>
   </Teleport>
 
   <v-container fluid>
     <v-card class="pa-4">
+      <div v-if="xs" class="d-flex flex-column justify-space-between align-center px-4 mb-4">
+        <div>
+          <h3>{{ title }}</h3>
+        </div>
+
+        <v-btn-toggle variant="outlined" divided group color="primary" class="my-2">
+          <v-btn :rounded="false" color="primary" @click="prev()" icon="mdi-chevron-left"> </v-btn>
+          <v-btn :rounded="false" color="primary" @click="today()"> Today </v-btn>
+          <v-btn :rounded="false" color="primary" @click="next()" icon="mdi-chevron-right"> </v-btn>
+        </v-btn-toggle>
+
+        <v-btn :rounded="false" @click="exportModal = true" prepend-icon="mdi-file-excel"> export </v-btn>
+      </div>
       <FullCalendar ref="calendarRef" :options="calendarOptions" class="h-screen">
         <template #eventContent="arg">
           <v-tooltip bottom color="teal">

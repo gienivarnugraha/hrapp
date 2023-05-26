@@ -3,7 +3,7 @@
     <v-app-bar app :elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" v-if="isAuthenticated"></v-app-bar-nav-icon>
       
-      <v-img src="/storage/img/polban.png" alt="" width="40" class="mx-8" />
+      <v-img src="/storage/img/polban.png" alt="" width="40" class="d-none d-sm-block mx-4 mx-md-8" />
       
       <div class="w-100" id="page-header">
       </div>
@@ -42,7 +42,7 @@
             <v-divider></v-divider>
 
             <v-card-actions>
-              <v-btn location="bottom" prepend-icon="mdi-logout" :loading="loading" @click="logout"> Logout</v-btn>
+              <v-btn location="bottom" :rounded="false" block flat prepend-icon="mdi-logout" color="error" :loading="loading" @click="logout"> Logout</v-btn>
             </v-card-actions>
           </v-card>
         </v-menu>
@@ -101,9 +101,6 @@ const logout = async () => {
   loading.value = true
   try {
     await logoutService()
-
-    router.push({ name: 'login' })
-
   } catch (error) {
     console.error(error);
   } finally {

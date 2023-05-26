@@ -26,13 +26,13 @@ app.use(Vuetify)
 app.use(router)
 app.use(pinia)
 
-
 const { isAuthenticated } = storeToRefs(useUserStore())
 
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} - HRAPP`
 
-  if (to.name !== 'login' && to.meta.requiresAuth && !isAuthenticated) next({ name: 'login' })
+  if (to.name !== 'login' && to.meta.requiresAuth && !isAuthenticated.value) next({ name: 'login' })
+  else if ((to.name == 'login' || to.path == '/') && isAuthenticated.value) next({ name: 'dashboard' })
   else next()
 })
 

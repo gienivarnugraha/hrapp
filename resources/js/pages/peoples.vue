@@ -1,7 +1,7 @@
 <template>
   <Teleport to="#page-header">
     <div class="d-flex justify-space-between align-center px-4">
-      <div class="w-25">
+      <div  v-if="!xs" class="w-50">
         <v-icon class="mr-4" icon="mdi-account-group" size="large" />
         <span class="text-h6"> Peoples </span>
       </div>
@@ -9,7 +9,7 @@
       <v-menu v-model="addMenu" :close-on-content-click="false" location="end">
         <template v-slot:activator="{ props }">
 
-          <v-btn size="small" :rounded="false" prepend-icon="mdi-plus" variant="flat" v-bind="props">Add People</v-btn>
+          <v-btn  :size="xs ? 'x-small' : 'small'" :rounded="false" prepend-icon="mdi-plus" variant="flat" v-bind="props">Add People</v-btn>
         </template>
 
         <v-card class="pa-4" min-width="300" title="Add People" :disabled="addModel.loading" :loading="addModel.loading">
@@ -69,14 +69,14 @@
                 <v-card variant="outlined" color="indigo" class="pa-4 mt-2 mb-4"  v-else>
                   <v-card-title class="px-8 my-2">
                     <v-row align="center">
-                      <v-col cols="8">
+                      <v-col :cols="xs ? 12 : 8">
                         <v-icon class="mr-4">
                           mdi-account
                         </v-icon>
 
                         {{ item.raw.name }}
                       </v-col>
-                      <v-col cols="2" class="text-right">
+                      <v-col :cols="xs ? 12 : 2" class="text-right">
                         <v-menu :key="item.raw.id" v-model="item.raw.edit" :close-on-content-click="false" location="end">
                           <template v-slot:activator="{ props }">
                             <v-btn size="small" :key="item.raw.id" class="w-100" :rounded="false" prepend-icon="mdi-plus"
@@ -117,7 +117,7 @@
                         </v-menu>
 
                       </v-col>
-                      <v-col cols="2" class="text-right">
+                      <v-col :cols="xs ? 12 : 2" class="text-right">
                         <v-btn size="small" class="w-100" color="error" :rounded="false" prepend-icon="mdi-delete"
                           variant="flat" @click="onDelete(item.raw.id)">delete</v-btn>
                       </v-col>
@@ -127,7 +127,7 @@
                   <v-slide-y-transition>
                     <v-card-text>
                       <v-row>
-                        <v-col cols="6">
+                        <v-col :cols="xs ? 12 : 6">
                           <v-card-subtitle> Competencies: </v-card-subtitle>
                           <competency-list :items="item.raw.skills['hard']" header="Hard Skills"></competency-list>
                           <competency-list :items="item.raw.skills['soft']" header="Soft Skills"></competency-list>
@@ -135,7 +135,7 @@
 
                         </v-col>
 
-                        <v-col cols="6">
+                        <v-col :cols="xs ? 12 : 6">
                           <v-card-subtitle class="mb-4" v-if="item.raw.next_position"> Required
                             Competencies to Promote
                             into {{
@@ -188,6 +188,9 @@
 
 <script setup>
 import { get } from '../composables/api'
+import { useDisplay } from 'vuetify'
+
+const {xs} = useDisplay()
 
 const headers = [
   { title: "Name", key: 'name', },

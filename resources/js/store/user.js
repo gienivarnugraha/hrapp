@@ -5,7 +5,7 @@ const cookies = new Cookies();
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    user: {},
+    user: cookies.get('user'),
   }),
   getters: {
     isAuthenticated: (state) => !_.isEmpty(state.user),
@@ -41,14 +41,12 @@ export const useUserStore = defineStore('user', {
 
         await this.getUser();
 
-        await this.router.push('/dashboard');
+        this.router.push('/dashboard');
 
       } catch (error) {
-        console.error(error);
         if (error.response.status === 401) {
           cookies.remove('user');
         }
-
         throw error.response.data;
       }
     },
@@ -56,6 +54,7 @@ export const useUserStore = defineStore('user', {
       axios.post('/api/logout').then(response => {
         this.user = {};
         cookies.remove('user');
+        this.router.push('/login');
 
       }).catch(error => {
         console.error('logoout error: ', error);
