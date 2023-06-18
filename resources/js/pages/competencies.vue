@@ -36,8 +36,8 @@
   <v-container fluid>
     <v-card class="px-4 py-2" :disabled="loading">
       <v-card-text>
-        <v-data-table-server :headers="headers" :items="items" :items-length="total" :loading="loading"
-          :items-per-page="15" item-value="id" item-title="name" @update:options="options = $event">
+        <v-data-table-server :headers="headers" :group-by="[{ key: 'position.title' }]" :items-length="total" :items="items" :loading="loading"
+           item-value="id" item-title="name" >
 
           <template v-slot:item.name="{ item }">
             <v-text-field v-if="item.raw.edit" class="w-100" v-model="item.raw.name" density="compact"
@@ -83,7 +83,7 @@ const items = ref([])
 
 const total = ref(0)
 
-const options = ref({})
+const options = ref(null)
 
 const add = ref(false)
 
@@ -98,6 +98,12 @@ const types = [
   { title: "Soft Skill", value: 'soft' },
   { title: "Hard Skill", value: 'hard' },
   { title: "DOA Skill", value: 'doa' },
+]
+
+const positions = [
+  { title: "Junior", value: 1 },
+  { title: "Medior", value: 2 },
+  { title: "Senior", value: 3 },
 ]
 
 const onSave = async (item) => {
@@ -135,7 +141,12 @@ const getCompetencies = async () => {
   loading.value = true
   try {
     const { items: competencies, totalItems } = await get('/api/competencies', options)
-    items.value = competencies
+
+    items.value = competencies.map(competency => {
+      competency.position = positions.find((pos) => pos.value === competency.position)
+      return competency
+    })
+
     total.value = totalItems
   } catch (error) {
     console.error(error);
@@ -144,14 +155,8 @@ const getCompetencies = async () => {
   }
 }
 
-const unwatchQuery = watch(
-  () => options,
-  () => getCompetencies(),
-  { deep: true, flush: 'sync' }
-)
-
-onUnmounted(() => {
-  unwatchQuery()
+onMounted(() => {
+  getCompetencies()
 })
 </script>
 

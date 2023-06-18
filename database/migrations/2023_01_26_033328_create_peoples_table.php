@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('nik');
             $table->string('email');
             $table->string('org');
-            $table->string('position');
+            $table->tinyInteger('position');
             $table->foreignId('job_title_id')->constrained();
             $table->softDeletes();
             $table->timestamps();

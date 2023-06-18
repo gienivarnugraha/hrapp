@@ -136,11 +136,9 @@
                         </v-col>
 
                         <v-col :cols="xs ? 12 : 6">
-                          <v-card-subtitle class="mb-4" v-if="item.raw.next_position"> Required
-                            Competencies to Promote
-                            into {{
-                              item.raw.next_position
-                            }} </v-card-subtitle>
+                          <v-card-subtitle class="mb-4" v-if="item.raw.next_position">
+                            Competencies Required to Promote
+                             </v-card-subtitle>
 
                           <v-row class=" px-4">
                             <v-col :cols="item.raw.next_position ? 6 : 12">
@@ -197,13 +195,13 @@ const headers = [
   { title: "NIK", key: 'nik', },
   { title: "ORG", key: 'org', },
   { title: "Job Title", key: 'job_title.name', },
-  { title: "Position", key: 'position', },
+  { title: "Position", key: 'position.title', },
 ]
 
 const positions = [
-  { title: "Junior", value: 'junior' },
-  { title: "Medior", value: 'medior' },
-  { title: "Senior", value: 'senior' },
+  { title: "Junior", value:1},
+  { title: "Medior", value:2},
+  { title: "Senior", value:3},
 ]
 
 let items = ref([])
@@ -283,7 +281,7 @@ const filterByJobs = async (job) => {
     items.value = peoples
   } catch (error) {
     console.error(error);
-  } 
+  }
 }
 
 const onSave = async (item) => {
@@ -372,7 +370,11 @@ const getPeoples = async () => {
   try {
     const { items: peoples, totalItems } = await get('/api/peoples', options)
 
-    items.value = peoples
+
+    items.value = peoples.map(people => {
+      people.position = positions.find((pos) => pos.value === people.position)
+      return people
+    })
 
     total.value = totalItems
 

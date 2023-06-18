@@ -1,15 +1,15 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CompetencyController;
+use App\Http\Controllers\API\EventController;
+use App\Http\Controllers\API\JobTitleController;
+use App\Http\Controllers\API\PeopleController;
+use App\Http\Controllers\API\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Spatie\GoogleCalendar\Event;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\EventController;
-use App\Http\Controllers\API\PeopleController;
-use App\Http\Controllers\API\JobTitleController;
-use App\Http\Controllers\API\CompetencyController;
+use Spatie\GoogleCalendar\Event;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('peoples/export/{id}', [PeopleController::class,'export']);
     Route::post('events/generate', [EventController::class,'generate']);
     Route::put('events/{id}/attendance', [EventController::class,'attendance']);
-    Route::post('logout', [AuthController::class,'logout']);	
-    Route::get('job-title/search', [JobTitleController::class,'search']);	
+    Route::post('logout', [AuthController::class,'logout']);
+    Route::get('job-title/search', [JobTitleController::class,'search']);
+    Route::get('job-title/{id}/peoples/{position}', [JobTitleController::class,'getPeoplesByJobTitle']);
 
     Route::apiResource('job-title', JobTitleController::class);
     Route::apiResource('competencies', CompetencyController::class)->except('show');

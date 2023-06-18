@@ -3,26 +3,27 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Faker\Factory;
-use App\Models\User;
-use App\Models\Event;
-use App\Models\People;
-use App\Models\JobTitle;
+use App\Enums\PositionEnum;
 use App\Models\Competency;
+use App\Models\Event;
+use App\Models\JobTitle;
+use App\Models\People;
+use App\Models\User;
+use Database\Seeders\CompetencySeeder;
+use Database\Seeders\JobTitleSeeder;
+use Database\Seeders\PeopleSeeder;
+use Database\Seeders\RoleSeeder;
+use Faker\Factory;
+use Illuminate\Container\Container;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Database\Seeder;
-use Database\Seeders\RoleSeeder;
-use Database\Seeders\PeopleSeeder;
 use Spatie\Permission\Models\Role;
-use Illuminate\Container\Container;
-use Database\Seeders\JobTitleSeeder;
-use Database\Seeders\CompetencySeeder;
 
 class DatabaseSeeder extends Seeder
 {
 
-    
+
     /**
      * Seed the application's database.
      *
@@ -37,11 +38,11 @@ class DatabaseSeeder extends Seeder
         JobTitleSeeder::run();
 
         CompetencySeeder::run();
-        
+
         PeopleSeeder::run();
 
         JobTitle::all()->each(function (JobTitle $jobTitle) {
-            collect(['junior', 'medior', 'senior'])->each(function (string $position) use ($jobTitle) {
+            collect([1,2,3])->each(function (int $position) use ($jobTitle) {
                 $competency = Competency::inRandomOrder()->limit(random_int(1, 6))->get();
 
                 $jobTitle->competencies()->attach($competency, ['position' => $position]);

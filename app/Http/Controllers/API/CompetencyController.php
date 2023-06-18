@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Competency;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Competency;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
 
 class CompetencyController extends Controller
 {
@@ -19,15 +19,10 @@ class CompetencyController extends Controller
     {
         $competency = Competency::orderBy('type');
 
-        if( $request->has('itemsPerPage') ) {
-            $itemsPerPage = $request->query('itemsPerPage') == -1 ? $competency->count() : $request->query('itemsPerPage');
-            
-            $paginator = $competency->paginate($itemsPerPage);
-        } else {
-            $paginator = $competency->get();
-        }
-
-        return response($paginator);
+        return response()->json([
+          "data" => $competency->get(),
+          "total" => $competency->count()
+        ]);
     }
 
     /**

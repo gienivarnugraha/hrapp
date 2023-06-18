@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\API;
 
-use Faker\Factory;
-use App\Models\Event;
-use App\Models\People;
-use App\Models\JobTitle;
-use App\Models\Competency;
-use Illuminate\Http\Request;
-use App\Mail\MailNotification;
-use Illuminate\Support\Carbon;
+use App\Enums\PositionEnum;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\EventResource;
+use App\Mail\MailNotification;
+use App\Models\Competency;
+use App\Models\Event;
+use App\Models\JobTitle;
+use App\Models\People;
+use Faker\Factory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Spatie\GoogleCalendar\Event as GoogleCalendar;
 
 class EventController extends Controller

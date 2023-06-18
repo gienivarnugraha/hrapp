@@ -1,58 +1,58 @@
-competency,type
-Planning & execution,soft
-Continuous improvement,soft
-Problem solving,soft
-Effective communication,soft
-Working conscientiously,soft
-Effective collaboration,soft
-Aviation regulation compliance,soft
-Prinsip Dasar Teori Komponen Subsistem Elektrikal,hard
-Prinsip Dasar Teori Perancangan Subsistem Elektrikal,hard
-Standar Industri dalam Bidang Elektrikal,hard
-Bahasa Inggris (Lisan & Tulisan),hard
-Prinsip Dasar Analisa atau Perhitungan Perancangan Subsistem Elektrikal ,hard
-Skematik Subsistem Elektrikal,hard
-Dokumen Teknik Subsistem Elektrikal,hard
-Perangkat Lunak untuk Perhitungan Subsistem Elektrikal,hard
-Dokumen Teknik,hard
-Requirement atau Spesifikasi Komponen Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Merancang salah satu subsistem elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Test Procedure atau Test Requirement Pengujian Fungi Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Membuat Test Report Pengujian Fungsi Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Metode Pembuatan Requirements Komponen Subsistem Elektrikal,hard
-Metode Perancangan Subsistem Elektrikal,hard
-Metode Pembuatan Test Procedure atau Test Requirement subsistem elektrikal,hard
-Standar dan Regulasi Industri Pesawat Terbang dalam Bidang Subsistem Elektrikal,hard
-Bahasa Inggris (Tulisan dan Lisan),hard
-Hubungan sub-sistem elektrikal dengan sistem-sistem terkait di Pesawat Terbang,hard
-Teamwork,hard
-Membuat Spesifikasi Teknik; Skematik; Technical Description dan Test Procedure atau Test Requirement Subsistem Elektrikal,hard
-Standar dan Proses Kerja Manual Sesuai Kebutuhannya,hard
-Analisa; memberikan solusi; mempresentasikan masalah-masalah subsistem elektrikal,hard
-Menghitung Perancangan Beberapa Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Analisa Unjuk Kerja Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Memberikan Solusi Terhadap Permasalahan Perancangan dan Pengujian Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard
-Metode Integrasi Perancangan Subsistem Elektrikal,hard
-Bahasa Inggris untuk Presentasi (Tulisan dan Lisan),hard
-Bernegosiasi dengan Supplier atau Customer,hard
-Menguasai aspek safety; maintainability; dan reliability analyses,hard
-Regulasi; standar; dan petunjuk pesawat terbang dalam bidang subsistem elektrikal,hard
-Proses dan Prosedur Sertifikasi Subsistem Elektrikal,hard
-Prinsip Project Management,hard
-Merencanakan dan Mengelola Suatu Paket Pekerjaan,hard
-Evaluasi Pekerjaan Engineer dibawahnya,hard
-Metode Integrasi dalam Perancangan,hard
-Menggunakan aturan dan menegosiasikan requirements didalam proses sertifikasi,hard
-Evaluasi requirements Komponen Perancangan Subsistem Elektrikal,hard
-Evaluasi Perancangan Subsistem Elektrikal yang Lebih Komplek,hard
-Evaluasi test procedure atau test requirements Pengujian Fungsi atau Ground atau Flight Test Subsistem Elektrikal,hard
-Evaluasi test report Pengujian Subsistem Elektrikal,hard
-Evaluasi Unjuk Kerja Subsistem Elektrikal,hard
-Integrasi beberap Subsistem Elektrikal,hard
-Design Review dengan Vendor atau Customer,hard
-Memberikan Solusi terhadap Masalah dalam Perancangan dan Pengujian Sub-sistem Elektrikal,hard
-Melakukan sertifikasi beberapa subsistem elektrikal ke Certification Authority,hard
-Memvalidasi Hasil Integrasi Suatu Sistem Elektrik berdasarkan Aspek Safety; Reliability; Maintainability; dan Pemenuhan Regulasi,hard
-Authority and Regulation/Certification Procedure Basic,doa
-Authority and Regulation,doa
-Certification Procedure,doa
+competency,type,position
+Planning & execution,soft,1
+Continuous improvement,soft,1
+Problem solving,soft,1
+Effective communication,soft,1
+Working conscientiously,soft,2
+Effective collaboration,soft,2
+Aviation regulation compliance,soft,2
+Prinsip Dasar Teori Komponen Subsistem Elektrikal,hard,2
+Prinsip Dasar Teori Perancangan Subsistem Elektrikal,hard,1
+Standar Industri dalam Bidang Elektrikal,hard,1
+Bahasa Inggris (Lisan & Tulisan),hard,1
+Prinsip Dasar Analisa atau Perhitungan Perancangan Subsistem Elektrikal ,hard,1
+Skematik Subsistem Elektrikal,hard,1
+Dokumen Teknik Subsistem Elektrikal,hard,1
+Perangkat Lunak untuk Perhitungan Subsistem Elektrikal,hard,1
+Dokumen Teknik,hard,1
+Requirement atau Spesifikasi Komponen Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,1
+Merancang salah satu subsistem elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,1
+Test Procedure atau Test Requirement Pengujian Fungi Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,1
+Membuat Test Report Pengujian Fungsi Salah Satu Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,1
+Metode Pembuatan Requirements Komponen Subsistem Elektrikal,hard,1
+Metode Perancangan Subsistem Elektrikal,hard,1
+Metode Pembuatan Test Procedure atau Test Requirement subsistem elektrikal,hard,1
+Standar dan Regulasi Industri Pesawat Terbang dalam Bidang Subsistem Elektrikal,hard,1
+Bahasa Inggris (Tulisan dan Lisan),hard,1
+Hubungan sub-sistem elektrikal dengan sistem-sistem terkait di Pesawat Terbang,hard,2
+Teamwork,hard,1
+Membuat Spesifikasi Teknik; Skematik; Technical Description dan Test Procedure atau Test Requirement Subsistem Elektrikal,hard,3
+Standar dan Proses Kerja Manual Sesuai Kebutuhannya,hard,2
+Analisa; memberikan solusi; mempresentasikan masalah-masalah subsistem elektrikal,hard,2
+Menghitung Perancangan Beberapa Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,2
+Analisa Unjuk Kerja Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,2
+Memberikan Solusi Terhadap Permasalahan Perancangan dan Pengujian Subsistem Elektrikal antara lain (Lighting; Door Control; Environmental; Powerplant; Fuel; Pneumatic; Hydraulic; Landing Gear; and Flight Control System),hard,2
+Metode Integrasi Perancangan Subsistem Elektrikal,hard,1
+Bahasa Inggris untuk Presentasi (Tulisan dan Lisan),hard,1
+Bernegosiasi dengan Supplier atau Customer,hard,1
+Menguasai aspek safety; maintainability; dan reliability analyses,hard,1
+Regulasi; standar; dan petunjuk pesawat terbang dalam bidang subsistem elektrikal,hard,1
+Proses dan Prosedur Sertifikasi Subsistem Elektrikal,hard,1
+Prinsip Project Management,hard,3
+Merencanakan dan Mengelola Suatu Paket Pekerjaan,hard,3
+Evaluasi Pekerjaan Engineer dibawahnya,hard,3
+Metode Integrasi dalam Perancangan,hard,3
+Menggunakan aturan dan menegosiasikan requirements didalam proses sertifikasi,hard,3
+Evaluasi requirements Komponen Perancangan Subsistem Elektrikal,hard,3
+Evaluasi Perancangan Subsistem Elektrikal yang Lebih Komplek,hard,3
+Evaluasi test procedure atau test requirements Pengujian Fungsi atau Ground atau Flight Test Subsistem Elektrikal,hard,3
+Evaluasi test report Pengujian Subsistem Elektrikal,hard,3
+Evaluasi Unjuk Kerja Subsistem Elektrikal,hard,3
+Integrasi beberap Subsistem Elektrikal,hard,2
+Design Review dengan Vendor atau Customer,hard,2
+Memberikan Solusi terhadap Masalah dalam Perancangan dan Pengujian Sub-sistem Elektrikal,hard,2
+Melakukan sertifikasi beberapa subsistem elektrikal ke Certification Authority,hard,2
+Memvalidasi Hasil Integrasi Suatu Sistem Elektrik berdasarkan Aspek Safety; Reliability; Maintainability; dan Pemenuhan Regulasi,hard,3
+Authority and Regulation/Certification Procedure Basic,doa,1
+Authority and Regulation,doa,2
+Certification Procedure,doa,3

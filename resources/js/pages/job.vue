@@ -97,6 +97,14 @@
                     </v-row>
                   </v-card-item>
 
+                  <v-card-text v-if="item.raw.loaded">
+                    <v-card-subtitle class="mb-4">
+                      Member Lists :
+                    </v-card-subtitle>
+
+                    <people-list :items="item.raw.peoples" :job-title-id="item.raw.id"></people-list>
+                  </v-card-text>
+
                   <v-card-text v-if="item.raw.loaded && item.raw.position">
                     <v-card-subtitle>
                       Required Competencies :
@@ -135,6 +143,7 @@ const {xs} = useDisplay ()
 const headers = [
   { title: "Name", key: 'name', },
   { title: "Head of Department", key: 'user.name', },
+  { title: "Department Member", key: 'peoples_count', align:'center'},
   // { title: 'Actions', key: 'actions', align: 'center', sortable: false, width: '25px' },
 ]
 
@@ -151,9 +160,9 @@ const loading = ref(true)
 const addJob = ref(false)
 
 const positions = [
-  { title: "Junior", value: 'junior' },
-  { title: "Medior", value: 'medior' },
-  { title: "Senior", value: 'senior' },
+  { title: "Junior", value: 1 },
+  { title: "Medior", value: 2 },
+  { title: "Senior", value: 3 },
 ]
 
 const compare = (a, b) => a.id === b.id
@@ -174,9 +183,11 @@ const onExpand = (ids) => {
 
     item.edit = false
 
-    const competencies = await showCompetencies(id)
+    const details = await showDetails(id)
 
-    item.competencies = competencies
+    item.competencies = details.competencies
+
+    item.peoples = details.peoples
 
     item.loaded = true
   });
@@ -195,11 +206,11 @@ const getCompetencies = async () => {
   }
 }
 
-const showCompetencies = async (id) => {
+const showDetails = async (id) => {
   try {
     const { data } = await axios.get(`/api/job-title/${id}`)
 
-    return data.competencies
+    return data
 
   } catch (error) {
     console.error(error);

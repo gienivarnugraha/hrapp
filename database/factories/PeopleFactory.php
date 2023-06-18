@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PositionEnum;
 use App\Models\JobTitle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,7 +25,7 @@ class PeopleFactory extends Factory
             'job_title_id' => JobTitle::all()->random()->id,
             //'email' => fake()->randomElement(['siti.rahma.darya@gmail.com','irsanbzr19@gmail.com']),
             'email' => 'irsanbzr19@gmail.com',
-            'position' => fake()->randomElement(['junior','medior','senior']),
+            'position' => fake()->randomElement([PositionEnum::Junior, PositionEnum::Medior, PositionEnum::Senior]),
         ];
     }
 }
