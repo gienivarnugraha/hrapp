@@ -121,11 +121,11 @@ class EventController extends Controller
       if ($event === null) {
         $name = "Training {$competency->name}";
 
-        // $gcal = GoogleCalendar::create([
-        //   'name' => $name,
-        //   'startDateTime' => $startDate,
-        //   'endDateTime' => $endDate,
-        // ]);
+        $gcal = GoogleCalendar::create([
+          'name' => $name,
+          'startDateTime' => $startDate,
+          'endDateTime' => $endDate,
+        ]);
 
         $event = Event::create([
           'competency_id' => $requiredCompetencyId,
@@ -136,7 +136,7 @@ class EventController extends Controller
           'start_time'    => $startDate->format('H:i:s'),
           'end_date'      => $endDate->format('Y-m-d'),
           'end_time'      => $endDate->format('H:i:s'),
-          // 'gcal_id'       => $gcal->googleEvent->id,
+          'gcal_id'       => $gcal->googleEvent->id,
         ]);
       };
 
@@ -149,7 +149,7 @@ class EventController extends Controller
       ]);
     });
 
-    // Mail::to($people->email)->send(new MailNotification($people));
+    Mail::to($people->email)->send(new MailNotification($people));
 
     return response()->json($schedule);
   }

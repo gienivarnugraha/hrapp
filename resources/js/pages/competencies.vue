@@ -143,7 +143,7 @@ const getCompetencies = async () => {
     const { items: competencies, totalItems } = await get('/api/competencies', options)
 
     items.value = competencies.map(competency => {
-      competency.position = positions.find((pos) => pos.value === competency.position)
+      competency.position = positions.find((pos) => pos.value === parseInt(competency.position))
       return competency
     })
 

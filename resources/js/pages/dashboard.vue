@@ -655,7 +655,7 @@ export default {
       </FullCalendar>
 
       <v-dialog v-model="eventModal" persistent>
-        <v-card class="pa-4" min-width="768" max-width="1280" :disabled="modelEvent.loading"
+        <v-card class="pa-4" min-width="256" max-width="1280" :disabled="modelEvent.loading"
           :loading="modelEvent.loading">
           <v-card-item>
             <v-row>
@@ -674,7 +674,7 @@ export default {
           </v-card-item>
 
           <v-row>
-            <v-col :cols="isEditing ? 6 : 12">
+            <v-col :cols="xs ? 12 : 6">
               <div class="px-4 pt-2 text-right">
                 <v-btn v-if="isEditing" size="small" :loading="modelEvent.loading"
                   @click="modelEvent.edit = !modelEvent.edit" :rounded="false" variant="flat"
@@ -726,7 +726,7 @@ export default {
 
 
             </v-col>
-            <v-col cols="6" v-if="isEditing">
+            <v-col :cols="xs ? 12 : 6" v-if="isEditing">
               <v-card variant="flat" :disabled="modelEvent.isDue">
                 <v-card-text>
                   <v-list-subheader> Attendance Lists: </v-list-subheader>
