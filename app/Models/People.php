@@ -25,7 +25,7 @@ class People extends Model
 
   public function competencies()
   {
-    return $this->belongsToMany(Competency::class)->orderBy('type');
+    return $this->belongsToMany(Competency::class)->orderBy('type')->withPivot('grade');
   }
 
   public function events()

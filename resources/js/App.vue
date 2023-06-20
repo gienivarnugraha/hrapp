@@ -3,7 +3,7 @@
     <v-app-bar app :elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" v-if="isAuthenticated"></v-app-bar-nav-icon>
       
-      <v-img src="/storage/img/polban.png" alt="" width="40" class="d-none d-sm-block mx-4 mx-md-8" />
+      <img src="/storage/img/polban.png" alt="" width="40" class="d-none d-sm-block mx-4 mx-md-8" />
       
       <div class="w-100" id="page-header">
       </div>

@@ -103,7 +103,7 @@ class EventController extends Controller
 
     $requiredCompetencies = JobTitle::find($people->jobTitle->id)->competencies->where('pivot.position', $nextPosition)->pluck('id')->all();
 
-    $competencies = $people->competencies->pluck('id')->all();
+    $competencies = $people->competencies->where('pivot.grade', '>=', 70)->pluck('id')->all();
 
     $diff = collect($requiredCompetencies)->diff($competencies)->all();
 
@@ -121,11 +121,11 @@ class EventController extends Controller
       if ($event === null) {
         $name = "Training {$competency->name}";
 
-        $gcal = GoogleCalendar::create([
-          'name' => $name,
-          'startDateTime' => $startDate,
-          'endDateTime' => $endDate,
-        ]);
+        // $gcal = GoogleCalendar::create([
+        //   'name' => $name,
+        //   'startDateTime' => $startDate,
+        //   'endDateTime' => $endDate,
+        // ]);
 
         $event = Event::create([
           'competency_id' => $requiredCompetencyId,
@@ -136,7 +136,7 @@ class EventController extends Controller
           'start_time'    => $startDate->format('H:i:s'),
           'end_date'      => $endDate->format('Y-m-d'),
           'end_time'      => $endDate->format('H:i:s'),
-          'gcal_id'       => $gcal->googleEvent->id,
+          // 'gcal_id'       => $gcal->googleEvent->id,
         ]);
       };
 
@@ -149,7 +149,7 @@ class EventController extends Controller
       ]);
     });
 
-    Mail::to($people->email)->send(new MailNotification($people));
+    // Mail::to($people->email)->send(new MailNotification($people));
 
     return response()->json($schedule);
   }
@@ -161,14 +161,20 @@ class EventController extends Controller
 
     if ($event->isDue) return response()->json(['error' => 'this training is over'], 400);
 
-    $event->peoples()->syncWithoutDetaching($request->input('attendance'));
+    $attendance = $request->input('attendance');
 
-    foreach ($event->peoples as $people) {
-      if ($people->pivot->attended) {
-        $people->competencies()->attach($event->competency_id);
-        GoogleCalendar::find($event->gcal_id)->delete();
+    foreach ($attendance as $attendee) {
+
+      $people = People::find($attendee['people_id']);
+
+
+      if ($attendee['attended']) {
+        $people->competencies()->syncWithoutDetaching([$event->competency_id => ['grade' => (int) $attendee['grade']]]);
+        $event->peoples()->syncWithoutDetaching([$people->id => ['attended' => true]]);
+        // GoogleCalendar::find($event->gcal_id)->delete();
       } else {
-        $people->competencies()->dettach($event->competency_id);
+        $people->competencies()->updateExistingPivot($event->competency_id, ['grade' => 0]);
+        $event->peoples()->detach($people->id);
       }
     }
 

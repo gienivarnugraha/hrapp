@@ -24,6 +24,7 @@ export const useUserStore = defineStore('user', {
 
         return this.user
       } catch (error) {
+        console.log('login error',error);
         if (error.response.status === 401) {
           cookies.remove('user');
         }

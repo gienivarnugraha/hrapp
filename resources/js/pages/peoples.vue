@@ -129,9 +129,9 @@
                       <v-row>
                         <v-col :cols="xs ? 12 : 6">
                           <v-card-subtitle> Competencies: </v-card-subtitle>
-                          <competency-list :items="item.raw.skills['hard']" header="Hard Skills"></competency-list>
-                          <competency-list :items="item.raw.skills['soft']" header="Soft Skills"></competency-list>
-                          <competency-list :items="item.raw.skills['doa']" header="DOA Skills"></competency-list>
+                          <skill-list :items="item.raw.skills['hard']" header="Hard Skills"></skill-list>
+                          <skill-list :items="item.raw.skills['soft']" header="Soft Skills"></skill-list>
+                          <skill-list :items="item.raw.skills['doa']" header="DOA Skills"></skill-list>
 
                         </v-col>
 

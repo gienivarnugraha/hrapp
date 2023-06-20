@@ -746,6 +746,9 @@ export default {
                       <template v-slot:append>
                         <v-checkbox hide-details v-model="people.pivot.attended"></v-checkbox>
                       </template>
+
+                      <v-text-field v-if="people.pivot.attended" min="0" max="100" step="10" v-model="people.pivot.grade"
+                        type="number" label="Grade"></v-text-field>
                     </v-list-item>
                   </v-list>
 

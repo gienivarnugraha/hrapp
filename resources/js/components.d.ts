@@ -15,5 +15,6 @@ declare module '@vue/runtime-core' {
     PeopleList: typeof import('./components/PeopleList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SkillList: typeof import('./components/SkillList.vue')['default']
   }
 }

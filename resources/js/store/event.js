@@ -88,7 +88,7 @@ export const useEventStore = defineStore('events', {
       this.model.loading = true
 
       let attendance = toRaw(payload).reduce(function (map, obj) {
-        map[obj.id] = { 'attended': obj.pivot.attended };
+        map[obj.id] = obj.pivot;
         return map;
       }, {});
 

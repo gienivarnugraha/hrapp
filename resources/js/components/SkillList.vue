@@ -3,14 +3,15 @@
     <v-list-subheader>{{ header }}</v-list-subheader>
     <v-list v-if="items.length > 0" :lines="lines" density="compact">
       <v-list-item class="mb-2" v-for="item in items" :key="item[itemValue]">
-        <v-card variant="tonal" :color="isPassed(item).color" class="pa-2 d-flex flex-no-wrap justify-space-between align-center ">
-          <v-avatar :color="isPassed(item).color" size="32" class="mr-2">
-            <v-icon :icon="isPassed(item).icon"></v-icon>
+        <v-card variant="tonal" :color="isGradePassed(item.pivot.grade) ? 'success' : 'error'" class="pa-2 d-flex flex-no-wrap justify-space-between align-center ">
+          <v-avatar :color="isGradePassed(item.pivot.grade) ? 'success' : 'error'" class="mr-2">
+            {{ item.pivot.grade }}
+
           </v-avatar>
 
           <v-card-text class="pa-1">
             {{ item[itemTitle] }} 
-            <p v-if="item.start_date && !isPassed(item).passed ">
+            <p v-if="item.start_date">
               <v-icon>mdi-clock</v-icon>
                Training Start At: {{ dateForHuman(item.start_date) }} </p>
           </v-card-text>
@@ -46,26 +47,6 @@ const dateForHuman = (date) => moment(date).format("dddd, MMMM Do YYYY, h:mm a")
 
 const hasComparator = (item) => props.compare && props.compare.find(comp => comp.id === item.id)
 
-const isPassed = item => {
-  let trained = toRaw(hasComparator(item))
-
-  let color, icon, passed
-
-  if (hasComparator(item) && trained.pivot.grade <=70 ){
-    color = 'warning'
-    icon = 'mdi-alert'
-    passed = false
-  } else if (hasComparator(item) && trained.pivot.grade >=70){
-    color = 'success'
-    icon = 'mdi-check'
-    passed = true
-  } else {
-    color = 'error'
-    icon = 'mdi-close'
-    passed = false
-  }
-  
-  return { color, icon, passed }
-}
+const isGradePassed = (grade) => parseInt(grade) >= 70
 
 </script>

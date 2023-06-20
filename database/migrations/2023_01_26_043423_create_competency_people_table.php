@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('people_id')->references('id')->on('peoples');
             $table->foreignId('competency_id')->references('id')->on('competencies');
+            $table->smallInteger('grade');
             $table->timestamps();
         });
     }
